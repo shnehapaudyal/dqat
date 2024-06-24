@@ -3,15 +3,11 @@ import numpy as np
 
 
 def get_data():
-    # dataset_path = ["datasets\dementia-death-rates new.csv", "datasets\AppleStore.csv",
-    #                 "datasets\Monkeypox Coursework Dataset.csv"]
-    # data_frame = pd.read_csv(dataset_path[2])
-    # return data_frame
-    dataset_path = 'static\File\Monkeypox_Coursework_Dataset.csv'
-    data_frame = pd.read_csv(dataset_path)
+    dataset_path = ["datasets\dementia-death-rates new.csv", "datasets\AppleStore.csv"]
+    data_frame = pd.read_csv(dataset_path[1])
     return data_frame
 
-
+#
 # def metrics(data_frame):
 #     statistics = data_frame.describe()
 #     info_type = data_frame.info()
@@ -29,13 +25,11 @@ def calculate_completeness(df):
     completeness = (non_empty_values / total_values) * 100
     return completeness
 
-
 def calculate_uniqueness(df):
     total_rows = len(df)
     unique_rows = len(df.drop_duplicates())
     uniqueness = (unique_rows / total_rows) * 100
     return uniqueness
-
 
 def calculate_consistency(df, schema):
     total_values = df.size
@@ -46,7 +40,6 @@ def calculate_consistency(df, schema):
     consistency = (consistent_values / total_values) * 100
     return consistency
 
-
 def calculate_conformity(df, formats):
     total_values = df.size
     conforming_values = 0
@@ -56,60 +49,33 @@ def calculate_conformity(df, formats):
     conformity = (conforming_values / total_values) * 100
     return conformity
 
-
-# till here Checked
 def calculate_timeliness(df, current_date, last_modification_date, creation_date):
     timeliness = (current_date - last_modification_date) / (current_date - creation_date) * 100
     return timeliness
-
 
 def calculate_volatility(current_date, creation_date, modification_date):
     volatility = (creation_date - modification_date) / (current_date - creation_date) * 100
     return volatility
 
-
 def calculate_readability(df):
-    import nltk
-    nltk.download('words')
-    nltk.download('punkt')
-    from nltk.corpus import words
-    from nltk.tokenize import word_tokenize
-    # Load English words from NLTK
-    english_words = set(words.words())
-
-    # Helper function to check if a value is correctly spelled
-    def is_correctly_spelled(value):
-        if isinstance(value, str):
-            tokens = word_tokenize(value)
-            return all(token.lower() in english_words for token in tokens)
-        return True
-
     total_values = df.size
-
-    processed_values = df.map(lambda x: isinstance(x, (str, int, float)) and is_correctly_spelled(x)).sum().sum()
+    processed_values = df.map(lambda x: isinstance(x, (str, int, float))).sum().sum()
     readability = (processed_values / total_values) * 100
     return readability
 
-
-def calculate_ease_of_manipulation(df):
-    # Align the DataFrames to ensure they have identical indices and columns
-    cleaned_df = df.dropna();
-    df, cleaned_df = df.align(cleaned_df, join='outer', fill_value=float('nan'))
+def calculate_ease_of_manipulation(df, cleaned_df):
     differences = (df != cleaned_df).sum().sum()
     total_values = df.size
     ease_of_manipulation = (differences / total_values) * 100
     return ease_of_manipulation
 
-
 def calculate_relevancy(access_count, total_access_count):
     relevancy = (access_count / total_access_count) * 100
     return relevancy
 
-
 def calculate_security(policy, protocols, threat_detection, encryption, documentation):
     security = sum([policy, protocols, threat_detection, encryption, documentation]) / 5 * 100
     return security
-
 
 def calculate_accessibility(df):
     total_values = df.size
@@ -117,36 +83,16 @@ def calculate_accessibility(df):
     accessibility = (accessible_values / total_values) * 100
     return accessibility
 
-
-def calculate_integrity(df):
-    processed_df= df.dropna();
-    df, processed_df = df.align(processed_df, join= 'outer', fill_value=float('nan'))
-    integrity_differences = (df != processed_df).sum().sum()
-    total_values_1 = df.size
-    integrity = ((total_values_1-integrity_differences) / total_values_1) * 100
+def calculate_integrity(original_df, processed_df):
+    differences = (original_df != processed_df).sum().sum()
+    total_values = original_df.size
+    integrity = (differences / total_values) * 100
     return integrity
 
 # Example usage
 df = get_data()
-consistent_values = 0
-type_mapping = {
-    'int64': int,
-    'float64': float,
-    'object': str,
-    'bool': bool,
-    'datetime64[ns]': pd.Timestamp
-}
-schema = {column: type_mapping[str(dtype)] for column, dtype in df.dtypes.items()}
-# schema = {"column1": int, "column2": str}  # Define your schema
-formats = {"date": r"\d{4}-\d{2}-\d{2}",
-           "time": r"\b([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\b",
-           "email": r"[^@]+@[^@]+\.[^@]+",
-           "zip_code": r"\b\d{5}\b",
-           "credit_card": r"\b\d{4}-?\d{4}-?\d{4}-?\d{4}\b",
-           "url": r"https?://[^\s]+",
-           "uk_postal_code": r"^[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$",
-           "canadian_postal_code": r"^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$"
-           }
+schema = {"column1": int, "column2": str}  # Define your schema
+formats = {"date": r"\d{4}-\d{2}-\d{2}", "email": r"[^@]+@[^@]+\.[^@]+"}  # Define your formats
 current_date = pd.Timestamp.now()
 last_modification_date = pd.Timestamp("2023-06-01")
 creation_date = pd.Timestamp("2022-01-01")
@@ -158,7 +104,7 @@ threat_detection = True
 encryption = True
 documentation = True
 original_df = df.copy()
-processed_df = df.copy()  # After the preprocessing has been done
+processed_df = df.copy()  # Assume some preprocessing has been done
 
 completeness = calculate_completeness(df)
 uniqueness = calculate_uniqueness(df)
@@ -167,11 +113,11 @@ conformity = calculate_conformity(df, formats)
 timeliness = calculate_timeliness(df, current_date, last_modification_date, creation_date)
 volatility = calculate_volatility(current_date, creation_date, last_modification_date)
 readability = calculate_readability(df)
-ease_of_manipulation = calculate_ease_of_manipulation(df)
+ease_of_manipulation = calculate_ease_of_manipulation(df, processed_df)
 relevancy = calculate_relevancy(access_count, total_access_count)
 security = calculate_security(policy, protocols, threat_detection, encryption, documentation)
 accessibility = calculate_accessibility(df)
-integrity = calculate_integrity(df)
+integrity = calculate_integrity(original_df, processed_df)
 
 print(f"Completeness: {completeness}%")
 print(f"Uniqueness: {uniqueness}%")
@@ -182,6 +128,6 @@ print(f"Volatility: {volatility}%")
 print(f"Readability: {readability}%")
 print(f"Ease of Manipulation: {ease_of_manipulation}%")
 print(f"Relevancy: {relevancy}%")
-# print(f"Security: {security}%")
+print(f"Security: {security}%")
 print(f"Accessibility: {accessibility}%")
 print(f"Integrity: {integrity}%")
