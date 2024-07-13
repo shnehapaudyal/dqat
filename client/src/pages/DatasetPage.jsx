@@ -1,0 +1,32 @@
+import { Grid, Typography } from "@mui/material";
+import { DatasetGauge, DatasetMetricsList } from "components";
+import { useParams } from "react-router-dom";
+
+export const DatasetPage = () => {
+  const { id } = useParams("id");
+  console.log({ id });
+  return (
+    <Grid container justifyContent="space-around" padding={4} gap={2}>
+      <Grid item xs={12}>
+        <Typography variant="h5">Dataset</Typography>
+      </Grid>
+      <Grid item flexShrink>
+        <DatasetGauge value={25} width={200} halfMode />
+      </Grid>
+      <Grid item flexGrow>
+        <Grid item container flexShrink direction="column">
+          <Grid item>
+            <Typography variant="h2">3</Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="h3">Overall Score</Typography>
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Grid item container>
+        <DatasetMetricsList />
+      </Grid>
+    </Grid>
+  );
+};

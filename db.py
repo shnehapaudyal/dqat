@@ -1,0 +1,47 @@
+from dbengine import session
+from entity.dataset import DatasetRecord
+
+
+# CRUD operations
+def create_dataset(dataset):
+    session.add(dataset)
+    session.commit()
+
+
+def read_dataset(dataset_id):
+    return session.query(DatasetRecord).filter_by(id=dataset_id).first()
+
+
+def update_dataset(dataset):
+    session.merge(dataset)
+    session.commit()
+
+
+def delete_dataset(dataset):
+    session.delete(dataset)
+    session.commit()
+
+
+def save_dataset(dataset):
+    existing_dataset = session.query(DatasetRecord).filter_by(datasetId=dataset.datasetId).first()
+    if existing_dataset:
+        # Update existing dataset
+        existing_dataset.filename = dataset.filename
+        existing_dataset.path = dataset.path
+        existing_dataset.file_type = dataset.file_type
+        existing_dataset.size = dataset.size
+    else:
+        # Insert new dataset
+        session.add(dataset)
+    session.commit()
+
+
+def get_all_datasets(page=0, per_page=10):
+    query = session.query(DatasetRecord)
+
+    if page < 1:
+        datasets = query.all()
+    else:
+        datasets = query.offset((page - 1) * per_page).limit(per_page).all()
+
+    return datasets, page + 1, len(datasets)

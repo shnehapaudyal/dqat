@@ -1,5 +1,10 @@
 import pandas as pd
 import numpy as np
+import nltk
+
+nltk.download('words')
+nltk.download('punkt')
+
 
 
 def get_data():
@@ -69,18 +74,13 @@ def calculate_volatility(current_date, creation_date, modification_date):
 
 
 def calculate_readability(df):
-    import nltk
-    nltk.download('words')
-    nltk.download('punkt')
-    from nltk.corpus import words
-    from nltk.tokenize import word_tokenize
     # Load English words from NLTK
-    english_words = set(words.words())
+    english_words = set(nltk.corpus.words.words())
 
     # Helper function to check if a value is correctly spelled
     def is_correctly_spelled(value):
         if isinstance(value, str):
-            tokens = word_tokenize(value)
+            tokens = nltk.tokenize.word_tokenize(value)
             return all(token.lower() in english_words for token in tokens)
         return True
 
@@ -119,12 +119,13 @@ def calculate_accessibility(df):
 
 
 def calculate_integrity(df):
-    processed_df= df.dropna();
-    df, processed_df = df.align(processed_df, join= 'outer', fill_value=float('nan'))
+    processed_df = df.dropna();
+    df, processed_df = df.align(processed_df, join='outer', fill_value=float('nan'))
     integrity_differences = (df != processed_df).sum().sum()
     total_values_1 = df.size
-    integrity = ((total_values_1-integrity_differences) / total_values_1) * 100
+    integrity = ((total_values_1 - integrity_differences) / total_values_1) * 100
     return integrity
+
 
 # Example usage
 df = get_data()
