@@ -1,21 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  IconButton,
-  Typography,
-} from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import Add from "@mui/icons-material/Add";
-import {
-  BorderColor,
-  Description,
-  DescriptionTwoTone,
-  UploadFile,
-} from "@mui/icons-material";
-import { blue } from "@mui/material/colors";
+import { DescriptionTwoTone, UploadFile } from "@mui/icons-material";
+import { useDatasets, useUploadDataset } from "api/query";
 
 export const FileUploadUI = () => {
   const [selectedFile, setSelectedFile] = React.useState();
@@ -27,13 +14,10 @@ export const FileUploadUI = () => {
   const [width, height] = [64, 64];
 
   const startUpload = async () => {
-    setUploading(true);
-    await new Promise((resolve) => {
-      setTimeout(resolve, 2000);
-    });
-    setUploading(false);
+    if (selectedFile) uploadDataset(selectedFile);
   };
-  const [isUploading, setUploading] = useState(false);
+
+  const { uploadDataset, isUploading } = useUploadDataset();
 
   useEffect(() => {
     if (selectedFile) console.log(selectedFile);

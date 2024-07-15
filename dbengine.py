@@ -6,6 +6,3 @@ engine = create_engine('sqlite:///dataset_records.db', echo=True)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()
-
-# Create the table in the database
-Base.metadata.create_all(engine)

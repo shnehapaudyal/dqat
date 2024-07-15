@@ -2,3 +2,5 @@
 node_modules
 .vscode
 node_modules
+/static/File/
+dataset_records.db

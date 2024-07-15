@@ -1,0 +1,61 @@
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:5000", // replace with your server's address
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Upload a dataset
+export const uploadDataset = async (file) => {
+  const formData = new FormData();
+  formData.append("File", file);
+
+  try {
+    const response = await api.post("/home", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading dataset:", error);
+    throw error;
+  }
+};
+
+// Get all dataset records
+export const getAllDatasetRecords = async (page = 0, perPage = 10) => {
+  try {
+    const response = await api.get(
+      `/datasets?page=${page + 1}&per_page=${perPage}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dataset records:", error);
+    throw error;
+  }
+};
+
+// Get a single dataset record
+export const getSingleDatasetRecord = async (datasetId) => {
+  try {
+    const response = await api.get(`/dataset/${datasetId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dataset record:", error);
+    throw error;
+  }
+};
+
+// Get dataset metrics
+export const getDatasetMetrics = async (datasetId) => {
+  try {
+    const response = await api.get(`/dataset/${datasetId}/metrics`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dataset metrics:", error);
+    throw error;
+  }
+};

@@ -28,7 +28,6 @@ class DatasetRecord(Base):
 
     def json(self):
         return {
-            'id': self.id,
             'dataset_id': self.dataset_id,
             'filename': self.filename,
             'path': self.path,
@@ -36,4 +35,3 @@ class DatasetRecord(Base):
             'file_type': self.file_type,
             'size': self.size
         }
-

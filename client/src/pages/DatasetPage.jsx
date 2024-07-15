@@ -1,10 +1,15 @@
 import { Grid, Typography } from "@mui/material";
+import { useDataset } from "api/query";
 import { DatasetGauge, DatasetMetricsList } from "components";
 import { useParams } from "react-router-dom";
 
 export const DatasetPage = () => {
   const { id } = useParams("id");
-  console.log({ id });
+
+  const dataset = useDataset(id);
+
+  console.log(dataset.data);
+
   return (
     <Grid container justifyContent="space-around" padding={4} gap={2}>
       <Grid item xs={12}>
@@ -25,7 +30,7 @@ export const DatasetPage = () => {
       </Grid>
 
       <Grid item container>
-        <DatasetMetricsList />
+        <DatasetMetricsList datasetId={id} />
       </Grid>
     </Grid>
   );

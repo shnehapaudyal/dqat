@@ -1,12 +1,20 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { DatasetGauge } from "./DatasetGauge";
+import { useDatasetMetrics } from "api/query";
+import { snakeCaseToTitleCase } from "utils/strings";
 
-export const DatasetMetricsList = () => {
-  const rows = [
-    { id: 1, score: 24, name: "Completeness", uploaded: new Date().getTime() },
-    { id: 2, score: 56, name: "Reliability", uploaded: new Date().getTime() },
-    { id: 3, score: 97, name: "Normality", uploaded: new Date().getTime() },
-  ];
+export const DatasetMetricsList = ({ datasetId }) => {
+  const metrics = useDatasetMetrics(datasetId);
+
+  console.log(metrics.data, datasetId);
+
+  const rows = metrics.data
+    ? Object.keys(metrics.data).map((key) => ({
+        id: key,
+        name: snakeCaseToTitleCase(key),
+        score: metrics.data[key],
+      }))
+    : [];
 
   const columns = [
     {

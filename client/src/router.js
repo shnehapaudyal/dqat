@@ -3,9 +3,7 @@ import { DatasetPage, MainPage } from "pages";
 import { Box } from "@mui/material";
 
 const PageWrapper = ({ children }) => (
-  <Box sx={{ height: "100vh" }}>
-    {children}
-  </Box>
+  <Box sx={{ height: "100vh" }}>{children}</Box>
 );
 
 export const router = createBrowserRouter([
