@@ -1,24 +1,13 @@
+import nltk
 import pandas as pd
-import numpy as np
 
 
 def get_data():
-    dataset_path = ["datasets\dementia-death-rates new.csv", "datasets\AppleStore.csv"]
+    dataset_path = ["datasets/dementia-death-rates-new.csv", "datasets/Monkeypox Coursework Dataset.csv",
+                    "datasets/AppleStore.csv"]
     data_frame = pd.read_csv(dataset_path[1])
     return data_frame
 
-
-#
-# def metrics(data_frame):
-#     statistics = data_frame.describe()
-#     info_type = data_frame.info()
-#     return statistics, info_type
-#
-#
-# data_frame = get_data()
-# statistics, info_type = metrics(data_frame)
-# print(statistics)
-# print(info_type)
 
 def calculate_completeness(df):
     total_values = df.size
@@ -54,6 +43,7 @@ def calculate_conformity(df, formats):
     return conformity
 
 
+# till here Checked
 def calculate_timeliness(df, current_date, last_modification_date, creation_date):
     timeliness = (current_date - last_modification_date) / (current_date - creation_date) * 100
     return timeliness
@@ -64,14 +54,29 @@ def calculate_volatility(current_date, creation_date, modification_date):
     return volatility
 
 
+# Load English words from NLTK
+english_words = set(nltk.corpus.words.words())
+
+
 def calculate_readability(df):
+    # Helper function to check if a value is correctly spelled
+    def is_correctly_spelled(value):
+        if isinstance(value, str):
+            tokens = nltk.tokenize.word_tokenize(value)
+            return all(token.lower() in english_words for token in tokens)
+        return True
+
     total_values = df.size
-    processed_values = df.map(lambda x: isinstance(x, (str, int, float))).sum().sum()
+
+    processed_values = df.map(lambda x: isinstance(x, (str, int, float)) and is_correctly_spelled(x)).sum().sum()
     readability = (processed_values / total_values) * 100
     return readability
 
 
-def calculate_ease_of_manipulation(df, cleaned_df):
+def calculate_ease_of_manipulation(df):
+    # Align the DataFrames to ensure they have identical indices and columns
+    cleaned_df = df.dropna()
+    df, cleaned_df = df.align(cleaned_df, join='outer', fill_value=float('nan'))
     differences = (df != cleaned_df).sum().sum()
     total_values = df.size
     ease_of_manipulation = (differences / total_values) * 100
@@ -95,18 +100,36 @@ def calculate_accessibility(df):
     return accessibility
 
 
-def calculate_integrity(original_df, processed_df):
-    differences = (original_df != processed_df).sum().sum()
-    total_values = original_df.size
-    integrity = (differences / total_values) * 100
+def calculate_integrity(df):
+    processed_df = df.dropna();
+    df, processed_df = df.align(processed_df, join='outer', fill_value=float('nan'))
+    integrity_differences = (df != processed_df).sum().sum()
+    total_values_1 = df.size
+    integrity = ((total_values_1 - integrity_differences) / total_values_1) * 100
     return integrity
 
 
 if __name__ == "__main__":
     # Example usage
     df = get_data()
-    schema = {"column1": int, "column2": str}  # Define your schema
-    formats = {"date": r"\d{4}-\d{2}-\d{2}", "email": r"[^@]+@[^@]+\.[^@]+"}  # Define your formats
+    consistent_values = 0
+    type_mapping = {
+        'int64': int,
+        'float64': float,
+        'object': str,
+        'bool': bool,
+        'datetime64[ns]': pd.Timestamp
+    }
+    schema = {column: type_mapping[str(dtype)] for column, dtype in df.dtypes.items()}
+    formats = {"date": r"\d{4}-\d{2}-\d{2}",
+               "time": r"\b([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\b",
+               "email": r"[^@]+@[^@]+\.[^@]+",
+               "zip_code": r"\b\d{5}\b",
+               "credit_card": r"\b\d{4}-?\d{4}-?\d{4}-?\d{4}\b",
+               "url": r"https?://[^\s]+",
+               "uk_postal_code": r"^[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$",
+               "canadian_postal_code": r"^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$"
+               }
     current_date = pd.Timestamp.now()
     last_modification_date = pd.Timestamp("2023-06-01")
     creation_date = pd.Timestamp("2022-01-01")
@@ -127,11 +150,13 @@ if __name__ == "__main__":
     timeliness = calculate_timeliness(df, current_date, last_modification_date, creation_date)
     volatility = calculate_volatility(current_date, creation_date, last_modification_date)
     readability = calculate_readability(df)
-    ease_of_manipulation = calculate_ease_of_manipulation(df, processed_df)
+    ease_of_manipulation = calculate_ease_of_manipulation(df)
     relevancy = calculate_relevancy(access_count, total_access_count)
     security = calculate_security(policy, protocols, threat_detection, encryption, documentation)
     accessibility = calculate_accessibility(df)
-    integrity = calculate_integrity(original_df, processed_df)
+    integrity = calculate_integrity(df)
+    score = calculate_overall_score(completeness, uniqueness, consistency, conformity, timeliness, readability,
+                                    ease_of_manipulation, integrity)
 
     print(f"Completeness: {completeness}%")
     print(f"Uniqueness: {uniqueness}%")
@@ -145,3 +170,4 @@ if __name__ == "__main__":
     print(f"Security: {security}%")
     print(f"Accessibility: {accessibility}%")
     print(f"Integrity: {integrity}%")
+    print(f"Score: {score}%")
