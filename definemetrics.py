@@ -1,3 +1,5 @@
+import json
+
 import nltk
 import pandas as pd
 
@@ -109,6 +111,19 @@ def calculate_integrity(df):
     return integrity
 
 
+def datatypes(df):
+    dtypes_dict = df.dtypes.to_dict()
+    return {k: str(dtypes_dict[k]) for k in dtypes_dict.keys()}
+
+
+def serialize_to_json(df):
+    return df.to_json(orient='split')
+
+
+def statistics(df):
+    return df.describe().to_dict()
+
+
 if __name__ == "__main__":
     # Example usage
     df = get_data()
@@ -155,8 +170,8 @@ if __name__ == "__main__":
     security = calculate_security(policy, protocols, threat_detection, encryption, documentation)
     accessibility = calculate_accessibility(df)
     integrity = calculate_integrity(df)
-    score = calculate_overall_score(completeness, uniqueness, consistency, conformity, timeliness, readability,
-                                    ease_of_manipulation, integrity)
+    # score = calculate_overall_score(completeness, uniqueness, consistency, conformity, timeliness, readability,
+    #                                 ease_of_manipulation, integrity)
 
     print(f"Completeness: {completeness}%")
     print(f"Uniqueness: {uniqueness}%")

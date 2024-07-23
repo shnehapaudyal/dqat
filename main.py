@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired
 
+import datasets
 import db
 import metrics
 from entity.dataset import DatasetRecord
@@ -79,6 +80,26 @@ def get_dataset_metrics(dataset_id):
         return {"error": "Dataset not found"}, 404
 
     return dataset_metrics, 200
+
+
+@app.route('/dataset/<string:dataset_id>/stats', methods=['GET'])
+def get_statistics(dataset_id):
+    statistics = (datasets.get_statistics(dataset_id))  # Assuming definemetrics has a get_statistics function
+
+    if not statistics:
+        return {"error": "Statistics not found"}, 404
+
+    return statistics, 200
+
+
+@app.route('/dataset/<string:dataset_id>/datatype', methods=['GET'])
+def get_datatypes(dataset_id):
+    datatype = (datasets.get_datatypes(dataset_id))  # Assuming definemetrics has a get_statistics function
+
+    if not datatype:
+        return {"error": "Datatype not found"}, 404
+
+    return datatype, 200
 
 
 if __name__ == '__main__':
