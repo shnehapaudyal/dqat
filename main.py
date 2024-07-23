@@ -1,5 +1,7 @@
-import json
 import uuid
+
+import numpy as np
+import pandas as pd
 from flask import Flask, request
 from flask_cors import CORS
 from flask_wtf import FlaskForm
@@ -32,10 +34,11 @@ def upload_dataset():
     filename = secure_filename(file.filename)
     file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], filename)
     file.save(file_path)  # Then save the file
+    size = os.stat(file_path).st_size
 
     # Save the dataset record to the database
     record = DatasetRecord(dataset_id=str(uuid.uuid4()), filename=filename, path=file_path, file_type=file.mimetype,
-                           size=file.content_length)
+                           size=size)
     print(record.json())
     record.save()
     print('saved')
@@ -80,6 +83,27 @@ def get_dataset_metrics(dataset_id):
         return {"error": "Dataset not found"}, 404
 
     return dataset_metrics, 200
+
+
+@app.route('/dataset/<string:dataset_id>/data', methods=['GET'])
+def get_dataset_data(dataset_id):
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+
+    # Calculate start and end indices for pagination
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+
+    dataset_path = db.read_dataset(dataset_id).path
+    df = pd.read_csv(dataset_path)
+
+    return df.to_json(orient='records'), 200
+
+
+@app.route('/dataset/<string:dataset_id>/issues', methods=['GET'])
+def get_dataset_issues(dataset_id):
+    # TODO: Implement data validation and quality checks
+    pass
 
 
 @app.route('/dataset/<string:dataset_id>/stats', methods=['GET'])

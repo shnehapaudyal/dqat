@@ -24,10 +24,18 @@ export const useDataset = (datasetId) =>
   useQuery(["dataset", datasetId, "detail"], () =>
     api.getSingleDatasetRecord(datasetId),
   );
+
 export const useDatasetMetrics = (datasetId) =>
   useQuery(["dataset", datasetId, "metric"], () =>
     api.getDatasetMetrics(datasetId),
   );
+
+export const useDatasetData = (datasetId, page, pageSize) =>
+  useQuery(["dataset", datasetId, "data"], () =>
+    api.getDatasetData(datasetId, page, pageSize),
+  );
+
+// Example of using custom fetcher for API requests
 
 // export const useDatasets = () => {
 //   // Upload dataset mutation
