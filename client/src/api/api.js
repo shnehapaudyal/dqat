@@ -59,3 +59,13 @@ export const getDatasetMetrics = async (datasetId) => {
     throw error;
   }
 };
+
+export const getDatasetData = async (datasetId, page, pageSize) => {
+  try {
+    const response = await api.get(`/dataset/${datasetId}/data?page=${page}&per_page=${pageSize}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dataset data:", error);
+    throw error;
+  }
+};

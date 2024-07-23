@@ -6,7 +6,7 @@ import { snakeCaseToTitleCase } from "utils/strings";
 export const DatasetMetricsList = ({ datasetId }) => {
   const metrics = useDatasetMetrics(datasetId);
 
-  console.log(metrics.data, datasetId);
+  // console.log(metrics.data, datasetId);
 
   const rows = metrics.data
     ? Object.keys(metrics.data).map((key) => ({
@@ -20,6 +20,7 @@ export const DatasetMetricsList = ({ datasetId }) => {
     {
       field: "score",
       headerName: "Score",
+      flex: 1,
       renderCell: (params) => (
         <DatasetGauge
           height={56}
@@ -30,7 +31,7 @@ export const DatasetMetricsList = ({ datasetId }) => {
         />
       ),
     },
-    { field: "name", headerName: "Metric" },
+    { field: "name", headerName: "Metric", flex: 3 },
   ];
 
   return <DataGrid rows={rows} columns={columns} />;
