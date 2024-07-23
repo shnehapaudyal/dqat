@@ -10,7 +10,7 @@ venv/touchfile: requirements.txt
 	touch venv/touchfile
 
 npm/install: client/package-lock.json
-	cd client; npm start
+	cd client; npm install
 
 build: npm/install venv
 

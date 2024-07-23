@@ -68,7 +68,10 @@ def get_single_dataset_record(dataset_id):
     if not record:
         return {"error": "Dataset not found"}, 404
 
-    return record.json(), 200
+    result = record.json()
+    result['overall_score'] = metrics.calculate_overall_score(dataset_id)
+
+    return result, 200
 
 
 @app.route('/dataset/<string:dataset_id>/metrics', methods=['GET'])
