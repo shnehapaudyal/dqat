@@ -1,5 +1,10 @@
 import nltk
+from nltk import corpus, tokenize
 import pandas as pd
+
+from nltk_utils import download_nltk
+
+download_nltk()
 
 
 def get_data():
@@ -55,14 +60,14 @@ def calculate_volatility(current_date, creation_date, modification_date):
 
 
 # Load English words from NLTK
-english_words = set(nltk.corpus.words.words())
+english_words = set(corpus.words.words())
 
 
 def calculate_readability(df):
     # Helper function to check if a value is correctly spelled
     def is_correctly_spelled(value):
         if isinstance(value, str):
-            tokens = nltk.tokenize.word_tokenize(value)
+            tokens = tokenize.word_tokenize(value)
             return all(token.lower() in english_words for token in tokens)
         return True
 
@@ -155,8 +160,6 @@ if __name__ == "__main__":
     security = calculate_security(policy, protocols, threat_detection, encryption, documentation)
     accessibility = calculate_accessibility(df)
     integrity = calculate_integrity(df)
-    score = calculate_overall_score(completeness, uniqueness, consistency, conformity, timeliness, readability,
-                                    ease_of_manipulation, integrity)
 
     print(f"Completeness: {completeness}%")
     print(f"Uniqueness: {uniqueness}%")
@@ -170,4 +173,4 @@ if __name__ == "__main__":
     print(f"Security: {security}%")
     print(f"Accessibility: {accessibility}%")
     print(f"Integrity: {integrity}%")
-    print(f"Score: {score}%")
+    # print(f"Score: {score}%")
