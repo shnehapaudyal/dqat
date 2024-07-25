@@ -1,11 +1,22 @@
 import axios from "axios";
 
-const api = axios.create({
+const httpclient = axios.create({
   baseURL: "http://localhost:5000", // replace with your server's address
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+const api = {
+  post: (...args) => {
+    console.log("POST", { args })
+    return httpclient.post(...args);
+  },
+  get: (...args) => {
+    console.log("GET", { args })
+    return httpclient.get(...args);
+  }
+}
 
 // Upload a dataset
 export const uploadDataset = async (file) => {

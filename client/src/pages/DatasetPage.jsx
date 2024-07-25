@@ -50,16 +50,6 @@ export const DatasetPage = () => {
           </Grid>
         </Card>
       </Grid>
-      <Grid item xs={12} sm={6}>
-        <Box sx={{ marginRight: 1 }}>
-          <DatasetInfo datasetId={id} />
-        </Box>
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <Box sx={{ marginLeft: 1 }}>
-          <DatasetInfo datasetId={id} />
-        </Box>
-      </Grid>
       <Grid xs={12} item>
         <Tabs
           value={selectedTab}

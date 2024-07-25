@@ -1,6 +1,7 @@
-import { Grid, Pagination } from "@mui/material";
+import { Box, Divider, Grid, Pagination, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDatasetData } from "api/query";
+import { DatasetInfo } from "components/DatasetInfo";
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -38,7 +39,25 @@ export const DatasetDataPage = ({ datasetId }) => {
   // );
 
   return (
-    <Grid item container xs={12}>
+    <Grid item container xs={12} rowGap={2}>
+      <Grid item xs={12}>
+        <Typography variant="h6">Overview</Typography>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Box sx={{ marginRight: 1 }}>
+          <DatasetInfo datasetId={datasetId} />
+        </Box>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Box sx={{ marginLeft: 1 }}>
+          <DatasetInfo datasetId={datasetId} />
+        </Box>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant="h6">Data Sample</Typography>
+      </Grid>
+
       <Grid item xs={12} flexGrow>
         <DataGrid
           density="compact"

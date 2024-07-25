@@ -4,7 +4,9 @@ import { RouterProvider } from "react-router-dom";
 import { Box } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-const queryCleint = new QueryClient();
+const queryCleint = new QueryClient({
+  defaultOptions: { queries: { staleTime: 10 * 60 * 1000 } },
+});
 
 function App() {
   return (
