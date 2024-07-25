@@ -7,76 +7,72 @@ const httpclient = axios.create({
   },
 });
 
-const api = {
-  post: (...args) => {
-    console.log("POST", { args })
-    return httpclient.post(...args);
-  },
-  get: (...args) => {
-    console.log("GET", { args })
-    return httpclient.get(...args);
+const cb = async (fc, ...args) => {
+  try {
+    const result = await httpclient[fc](...args);
+    console.log(fc, { args, result });
+    return result;
+  } catch (error) {
+    console.error(fc, { args, error });
+    throw error;
   }
-}
+};
+
+const api = {
+  post: (...args) => cb("post", ...args),
+  get: (...args) => cb("get", ...args),
+};
 
 // Upload a dataset
 export const uploadDataset = async (file) => {
   const formData = new FormData();
   formData.append("File", file);
-
-  try {
-    const response = await api.post("/home", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error uploading dataset:", error);
-    throw error;
-  }
+  const response = await api.post("/home", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
 };
 
 // Get all dataset records
 export const getAllDatasetRecords = async (page = 0, perPage = 10) => {
-  try {
-    const response = await api.get(
-      `/datasets?page=${page + 1}&per_page=${perPage}`,
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching dataset records:", error);
-    throw error;
-  }
+  const response = await api.get(
+    `/datasets?page=${page + 1}&per_page=${perPage}`,
+  );
+  return response.data;
 };
 
 // Get a single dataset record
 export const getSingleDatasetRecord = async (datasetId) => {
-  try {
-    const response = await api.get(`/dataset/${datasetId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching dataset record:", error);
-    throw error;
-  }
+  const response = await api.get(`/dataset/${datasetId}`);
+  return response.data;
 };
 
 // Get dataset metrics
 export const getDatasetMetrics = async (datasetId) => {
-  try {
-    const response = await api.get(`/dataset/${datasetId}/metrics`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching dataset metrics:", error);
-    throw error;
-  }
+  const response = await api.get(`/dataset/${datasetId}/metrics`);
+  return response.data;
+};
+
+export const getDatasetRating = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/overall_rating`);
+  return response.data;
 };
 
 export const getDatasetData = async (datasetId, page, pageSize) => {
-  try {
-    const response = await api.get(`/dataset/${datasetId}/data?page=${page}&per_page=${pageSize}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching dataset data:", error);
-    throw error;
-  }
+  const response = await api.get(
+    `/dataset/${datasetId}/data?page=${page}&per_page=${pageSize}`,
+  );
+  return response.data;
+};
+
+export const getDatasetType = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/types`);
+  return response.data;
+};
+
+export const getDatasetStats = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/stats`);
+  return response.data;
 };
