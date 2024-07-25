@@ -60,16 +60,21 @@ def get_dataset_metrics(dataset_id):
         'integrity': integrity,
     }
 
+
 def calculate_overall_score(dataset_id):
     dataset_metrics = get_dataset_metrics(dataset_id)
-    overall_score = (
-                            dataset_metrics["completeness"]
-                            + dataset_metrics["uniqueness"]
-                            + dataset_metrics["consistency"]
-                            + dataset_metrics["conformity"]
-                            + dataset_metrics["timeliness"]
-                            + dataset_metrics["readability"]
-                            + dataset_metrics["ease_of_manipulation"]
-                            + dataset_metrics["integrity"]
-                    ) / 9
-    return overall_score
+
+    metrics = [
+        "completeness",
+        "uniqueness",
+        "consistency",
+        "conformity",
+        "timeliness",
+        "readability",
+        "ease_of_manipulation",
+        "integrity"
+    ]
+
+    total_score = sum(dataset_metrics[metric] for metric in metrics)
+
+    return total_score / len(metrics)

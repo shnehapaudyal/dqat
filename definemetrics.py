@@ -19,6 +19,7 @@ def get_data():
 def calculate_completeness(df):
     total_values = df.size
     non_empty_values = df.notna().sum().sum()
+
     completeness = (non_empty_values / total_values) * 100
     return completeness
 
