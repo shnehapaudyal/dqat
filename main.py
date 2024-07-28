@@ -1,6 +1,6 @@
+import logging
 import uuid
 
-import numpy as np
 import pandas as pd
 from flask import Flask, request
 from flask_cors import CORS
@@ -14,6 +14,11 @@ import datasets
 import db
 import metrics
 from entity.dataset import DatasetRecord
+
+logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -85,6 +90,16 @@ def get_dataset_metrics(dataset_id):
     return dataset_metrics, 200
 
 
+@app.route('/dataset/<string:dataset_id>/overall_rating', methods=['GET'])
+def get_dataset_rating(dataset_id):
+    dataset_metrics = metrics.calculate_overall_score(dataset_id)
+
+    if not metrics:
+        return {"error": "Dataset not found"}, 404
+
+    return {'rating': dataset_metrics}, 200
+
+
 @app.route('/dataset/<string:dataset_id>/data', methods=['GET'])
 def get_dataset_data(dataset_id):
     page = int(request.args.get('page', 1))
@@ -116,7 +131,7 @@ def get_statistics(dataset_id):
     return statistics, 200
 
 
-@app.route('/dataset/<string:dataset_id>/datatype', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/types', methods=['GET'])
 def get_datatypes(dataset_id):
     datatype = (datasets.get_datatypes(dataset_id))  # Assuming definemetrics has a get_datatypes function
 

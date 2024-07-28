@@ -21,6 +21,7 @@ export const DatasetGauge = ({
       text={({ value, valueMax }) =>
         shortLabel ? `${value.toFixed(0)}` : `${value.toFixed(0)} / ${valueMax}`
       }
+      needle
     />
   );
 };

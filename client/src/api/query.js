@@ -1,6 +1,8 @@
 import { useQuery, useMutation, queryCache } from "react-query";
 import * as api from "./api";
 
+const useApi = (...args) => useQuery(...args);
+
 export const useUploadDataset = () => {
   const {
     mutate: uploadDataset,
@@ -18,22 +20,33 @@ export const useUploadDataset = () => {
 };
 
 export const useDatasets = () =>
-  useQuery(["datasets"], () => api.getAllDatasetRecords());
+  useApi(["datasets"], () => api.getAllDatasetRecords());
 
 export const useDataset = (datasetId) =>
-  useQuery(["dataset", datasetId, "detail"], () =>
+  useApi(["dataset", datasetId, "detail"], () =>
     api.getSingleDatasetRecord(datasetId),
   );
 
+  export const useDatasetRating = (datasetId) =>
+    useApi(["dataset", datasetId, "rating"], () =>
+      api.getDatasetRating(datasetId),
+    );
+  
 export const useDatasetMetrics = (datasetId) =>
-  useQuery(["dataset", datasetId, "metric"], () =>
+  useApi(["dataset", datasetId, "metric"], () =>
     api.getDatasetMetrics(datasetId),
   );
 
 export const useDatasetData = (datasetId, page, pageSize) =>
-  useQuery(["dataset", datasetId, "data"], () =>
+  useApi(["dataset", datasetId, "data"], () =>
     api.getDatasetData(datasetId, page, pageSize),
   );
+
+export const useDatasetTypes = (datasetId) =>
+  useApi(["dataset", datasetId, "types"], () => api.getDatasetType(datasetId));
+
+export const useDatasetStat = (datasetId) =>
+  useApi(["dataset", datasetId, "stats"], () => api.getDatasetStats(datasetId));
 
 // Example of using custom fetcher for API requests
 

@@ -1,6 +1,6 @@
 import { mdiTableLarge } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
+import { Card, Grid, Tab, Tabs, Typography } from "@mui/material";
 import { useDataset } from "api/query";
 import { CustomTabPanel } from "components/TabPanel";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -8,8 +8,6 @@ import { getFileSize } from "utils/files";
 import { DatasetMetricsPage } from "./DatasetMetricsPage";
 import { DatasetDataPage } from "./DatasetDataPage";
 import { useEffect, useRef } from "react";
-import { blue, orange } from "@mui/material/colors";
-import { DatasetInfo } from "components/DatasetInfo";
 
 export const DatasetPage = () => {
   const { id } = useParams("id");
@@ -49,16 +47,6 @@ export const DatasetPage = () => {
             </Typography>
           </Grid>
         </Card>
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <Box sx={{ marginRight: 1 }}>
-          <DatasetInfo datasetId={id} />
-        </Box>
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <Box sx={{ marginLeft: 1 }}>
-          <DatasetInfo datasetId={id} />
-        </Box>
       </Grid>
       <Grid xs={12} item>
         <Tabs
