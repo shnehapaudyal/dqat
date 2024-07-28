@@ -118,12 +118,52 @@ def get_statistics(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/datatype', methods=['GET'])
 def get_datatypes(dataset_id):
-    datatype = (datasets.get_datatypes(dataset_id))  # Assuming definemetrics has a get_statistics function
+    datatype = (datasets.get_datatypes(dataset_id))  # Assuming definemetrics has a get_datatypes function
 
     if not datatype:
         return {"error": "Datatype not found"}, 404
 
     return datatype, 200
+
+
+@app.route('/dataset/<string:dataset_id>/missing', methods=['GET'])
+def get_missingvalue(dataset_id):
+    datatype = (datasets.get_missingvalue(dataset_id))  # Assuming definemetrics has a get_missing valuefunction
+
+    if not datatype:
+        return {"error": "Missing value not found"}, 404
+
+    return datatype, 200
+
+
+@app.route('/dataset/<string:dataset_id>/datatypeproblem', methods=['GET'])
+def get_inconsistent_datatype(dataset_id):
+    datatype = (datasets.get_inconsistent_datatype(dataset_id))
+
+    if not datatype:
+        return {"error": "Inconsistent datatype not found"}, 404
+
+    return datatype, 200
+
+
+@app.route('/dataset/<string:dataset_id>/outlier', methods=['GET'])
+def get_outlier(dataset_id):
+    datatype = (datasets.get_outlier(dataset_id))  # Assuming definemetrics has a get_outlier value function
+
+    if not datatype:
+        return {"error": "Missing value not found"}, 404
+
+    return datatype, 200
+
+
+@app.route('/dataset/<string:dataset_id>/typos', methods=['GET'])
+def get_typos(dataset_id):
+    typos = (datasets.get_typos(dataset_id))  # Assuming definemetrics has a get_typos value function
+
+    if not typos:
+        return {"error": "Typos not found"}, 404
+
+    return typos, 200
 
 
 if __name__ == '__main__':

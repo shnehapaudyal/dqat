@@ -1,11 +1,13 @@
 import json
-
 import nltk
-from nltk import corpus, tokenize
 import pandas as pd
-
+import numpy as np
+nltk.download('words')
+nltk.download('punkt')
+from nltk.corpus import words
 from nltk_utils import download_nltk
-
+from nltk import corpus, tokenize
+from nltk.tokenize import word_tokenize
 download_nltk()
 
 
@@ -116,17 +118,126 @@ def calculate_integrity(df):
     return integrity
 
 
+# Dataset Information
 def datatypes(df):
     dtypes_dict = df.dtypes.to_dict()
     return {k: str(dtypes_dict[k]) for k in dtypes_dict.keys()}
 
 
-def serialize_to_json(df):
-    return df.to_json(orient='split')
-
-
 def statistics(df):
     return df.describe().to_dict()
+
+
+# Dataset Problems
+def missingvalues(df):
+    try:
+        # null = df.isnull().sum().to_dict()
+        nullpercentage = ((df.isna().sum() / len(df)) * 100).to_dict()
+        return nullpercentage
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+
+
+def inconsistent_datatype(df):
+    type_mapping = {
+        'int64': int,
+        'float64': float,
+        'object': str,
+        'bool': bool,
+        'datetime64[ns]': pd.Timestamp
+    }
+    schema = {column: type_mapping[str(dtype)] for column, dtype in df.dtypes.items()}
+
+    column_inconsistency = {}
+
+    for column in df.columns:
+        if column in schema:
+            total_values = len(df[column])
+            consistent_values = df[column].apply(lambda x: isinstance(x, schema[column])).sum()
+            consistency = (consistent_values / total_values) * 100
+            column_inconsistency[column] = 100 - consistency
+
+    return column_inconsistency
+
+
+def outliers(df):
+    # Converting the datatypes according to the dataset values
+    def is_numeric(value):
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+    # Function to convert columns to the appropriate data type
+    def convert_column_types(data_frame):
+        for column in data_frame.columns:
+            # Count the number of numeric and string values in the column
+            numeric_count = data_frame[column].apply(is_numeric).sum()
+            total_count = len(data_frame[column])
+            string_count = total_count - numeric_count
+
+            # If the majority of values are numeric, convert the column to numeric
+            if numeric_count > string_count:
+                data_frame[column] = pd.to_numeric(data_frame[column], errors='coerce')
+            else:
+                data_frame[column] = data_frame[column].astype(str)
+
+        return data_frame
+
+    data_frame = convert_column_types(df.copy())
+
+    def detect_outliers_std(data_frame, column):
+        mean = data_frame[column].mean()
+        std = data_frame[column].std()
+        threshold = 3  # Typically 3 standard deviations
+        outliers = data_frame[
+            (data_frame[column] > mean + threshold * std) | (data_frame[column] < mean - threshold * std)]
+        return outliers
+
+    # Loop through each column in the dataframe
+    outlier_percentages = {}  # Initialize a dictionary to store outlier percentages
+    for column in data_frame.columns:
+        if data_frame[column].dtype in [np.float64, np.int64]:
+            # print(f"\nColumn: {column}")
+
+            # Detect outliers using Standard Deviation Method
+            outliers_std = detect_outliers_std(data_frame, column)
+
+            outlier_percentage = len(outliers_std) / len(data_frame) * 100
+            outlier_percentages[column] = outlier_percentage
+
+        else:
+            # print(f"\nSkipping column {column} as it is not numerical.")
+            outlier_percentages[column] = 'Not Numeric'  # Mark non-numerical columns
+    return outlier_percentages
+
+
+def typos(df):
+
+    english_words = set(words.words())
+
+    def is_correctly_spelled(value):
+        if isinstance(value, str):
+            tokens = word_tokenize(value)
+            return all(token.lower() in english_words for token in tokens)
+        return True
+
+    # Function to calculate readability scores, counts, and typo percentages
+    def calculate_typos(df):
+        typo_percentages = {}
+
+        for column in df.columns:
+            correctly_spelled = df[column].apply(is_correctly_spelled).sum()
+            total_count = len(df[column])
+            typo_percentages[column] = ((total_count - correctly_spelled) / total_count) * 100
+
+        return typo_percentages
+
+    return calculate_typos(df)
+
+
 
 
 if __name__ == "__main__":
