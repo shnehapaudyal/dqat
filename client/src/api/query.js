@@ -1,7 +1,7 @@
-import { useQuery, useMutation, queryCache } from "react-query";
+import { useQuery as useApi, useMutation, queryCache } from "react-query";
 import * as api from "./api";
 
-const useApi = (...args) => useQuery(...args);
+// const useApi = (...args) => useQuery(...args);
 
 export const useUploadDataset = () => {
   const {
@@ -27,11 +27,11 @@ export const useDataset = (datasetId) =>
     api.getSingleDatasetRecord(datasetId),
   );
 
-  export const useDatasetRating = (datasetId) =>
-    useApi(["dataset", datasetId, "rating"], () =>
-      api.getDatasetRating(datasetId),
-    );
-  
+export const useDatasetRating = (datasetId) =>
+  useApi(["dataset", datasetId, "rating"], () =>
+    api.getDatasetRating(datasetId),
+  );
+
 export const useDatasetMetrics = (datasetId) =>
   useApi(["dataset", datasetId, "metric"], () =>
     api.getDatasetMetrics(datasetId),
@@ -47,6 +47,31 @@ export const useDatasetTypes = (datasetId) =>
 
 export const useDatasetStat = (datasetId) =>
   useApi(["dataset", datasetId, "stats"], () => api.getDatasetStats(datasetId));
+
+export const useMissingValue = (datasetId, enabled) =>
+  useApi(
+    ["dataset", datasetId, "issues", "missingValue"],
+    () => api.getMissingValue(datasetId),
+    { enabled },
+  );
+export const useInconsistency = (datasetId, enabled) =>
+  useApi(
+    ["dataset", datasetId, "issues", "inconsistency"],
+    () => api.getInconsistency(datasetId),
+    { enabled },
+  );
+export const useOutlier = (datasetId, enabled) =>
+  useApi(
+    ["dataset", datasetId, "issues", "outlier"],
+    () => api.getOutlier(datasetId),
+    { enabled },
+  );
+export const useTypo = (datasetId, enabled) =>
+  useApi(
+    ["dataset", datasetId, "issues", "typo"],
+    () => api.getTypo(datasetId),
+    { enabled },
+  );
 
 // Example of using custom fetcher for API requests
 

@@ -141,7 +141,7 @@ def get_datatypes(dataset_id):
     return datatype, 200
 
 
-@app.route('/dataset/<string:dataset_id>/missing', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/issues/missing', methods=['GET'])
 def get_missingvalue(dataset_id):
     datatype = (datasets.get_missingvalue(dataset_id))  # Assuming definemetrics has a get_missing valuefunction
 
@@ -151,7 +151,7 @@ def get_missingvalue(dataset_id):
     return datatype, 200
 
 
-@app.route('/dataset/<string:dataset_id>/datatypeproblem', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/issues/inconsistency', methods=['GET'])
 def get_inconsistent_datatype(dataset_id):
     datatype = (datasets.get_inconsistent_datatype(dataset_id))
 
@@ -161,7 +161,7 @@ def get_inconsistent_datatype(dataset_id):
     return datatype, 200
 
 
-@app.route('/dataset/<string:dataset_id>/outlier', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/issues/outlier', methods=['GET'])
 def get_outlier(dataset_id):
     datatype = (datasets.get_outlier(dataset_id))  # Assuming definemetrics has a get_outlier value function
 
@@ -171,7 +171,7 @@ def get_outlier(dataset_id):
     return datatype, 200
 
 
-@app.route('/dataset/<string:dataset_id>/typos', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/issues/typo', methods=['GET'])
 def get_typos(dataset_id):
     typos = (datasets.get_typos(dataset_id))  # Assuming definemetrics has a get_typos value function
 

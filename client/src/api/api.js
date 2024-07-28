@@ -10,7 +10,7 @@ const httpclient = axios.create({
 const cb = async (fc, ...args) => {
   try {
     const result = await httpclient[fc](...args);
-    console.log(fc, { args, result });
+    // console.log(fc, { args, result });
     return result;
   } catch (error) {
     console.error(fc, { args, error });
@@ -74,5 +74,25 @@ export const getDatasetType = async (datasetId) => {
 
 export const getDatasetStats = async (datasetId) => {
   const response = await api.get(`/dataset/${datasetId}/stats`);
+  return response.data;
+};
+
+export const getMissingValue = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/issues/missing`);
+  return response.data;
+};
+
+export const getInconsistency = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/issues/inconsistency`);
+  return response.data;
+};
+
+export const getOutlier = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/issues/outlier`);
+  return response.data;
+};
+
+export const getTypo = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/issues/typo`);
   return response.data;
 };

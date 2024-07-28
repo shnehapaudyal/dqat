@@ -8,6 +8,7 @@ import { getFileSize } from "utils/files";
 import { DatasetMetricsPage } from "./DatasetMetricsPage";
 import { DatasetDataPage } from "./DatasetDataPage";
 import { useEffect, useRef } from "react";
+import { DatasetIssuesPage } from "./DatasetIssuesPage";
 
 export const DatasetPage = () => {
   const { id } = useParams("id");
@@ -79,7 +80,9 @@ export const DatasetPage = () => {
         </CustomTabPanel>
       </Grid>
       <Grid item xs={12}>
-        <CustomTabPanel index="issues" value={selectedTab}></CustomTabPanel>
+        <CustomTabPanel index="issues" value={selectedTab}>
+          <DatasetIssuesPage datasetId={id} />
+        </CustomTabPanel>
       </Grid>
     </Grid>
   );
