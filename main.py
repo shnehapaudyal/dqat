@@ -184,7 +184,7 @@ def get_typos(dataset_id):
 @app.route('/dataset/<string:dataset_id>/format', methods=['GET'])
 def get_formats(dataset_id):
     formats = (datasets.get_formats(dataset_id))
-
+    print(formats)
     if not formats:
         return {"error": "Formats not found"}, 404
 

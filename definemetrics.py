@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import re
 
+import config
+
 nltk.download('words')
 nltk.download('punkt')
 from nltk.corpus import words
@@ -249,23 +251,20 @@ def is_string(value):
         except ValueError:
             return False
 
-def format_validation(df, formats):
-    # # Function to validate column values against provided formats
-    # def validate_column(value, format):
-    #     if re.match(format, value):
-    #         return True
-    #     return False
-    #
-    # # Initialize a dictionary to store format validation results
-    # format_validation_results = {}
-    #
-    # for column, format in formats.items():
-    #     if column in df.columns:
-    #         format_validation_results[column] = df[column].apply(lambda x: validate_column(x, format)).sum() / len(df[column])
-    #     else:
-    #         format_validation_results[column] = "Column not found in the dataframe"
-    #
-    # return format_validation_results
+
+def calculate_non_matching_percentage(df):
+    non_matching_percentages = {}
+
+    for column in df.columns:
+        if column in config.formats:
+            pattern = re.compile(formats[column])
+            non_matching_count = df[column].apply(lambda x: not bool(pattern.match(str(x)))).sum()
+            total_count = len(df[column])
+            non_matching_percentage = (non_matching_count / total_count) * 100
+            non_matching_percentages[column] = non_matching_percentage
+        else:
+            non_matching_percentages[column] = 0
+    return non_matching_percentages
 
 
 if __name__ == "__main__":
