@@ -2,6 +2,8 @@ import json
 import nltk
 import pandas as pd
 import numpy as np
+import re
+
 nltk.download('words')
 nltk.download('punkt')
 from nltk.corpus import words
@@ -162,15 +164,16 @@ def inconsistent_datatype(df):
     return column_inconsistency
 
 
-def outliers(df):
-    # Converting the datatypes according to the dataset values
-    def is_numeric(value):
-        try:
-            float(value)
-            return True
-        except ValueError:
-            return False
+  # Converting the datatypes according to the dataset values
+def is_numeric(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
+
+def outliers(df):
     # Function to convert columns to the appropriate data type
     def convert_column_types(data_frame):
         for column in data_frame.columns:
@@ -239,6 +242,30 @@ def typos(df):
     return calculate_typos(df)
 
 
+def is_string(value):
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+def format_validation(df, formats):
+    # # Function to validate column values against provided formats
+    # def validate_column(value, format):
+    #     if re.match(format, value):
+    #         return True
+    #     return False
+    #
+    # # Initialize a dictionary to store format validation results
+    # format_validation_results = {}
+    #
+    # for column, format in formats.items():
+    #     if column in df.columns:
+    #         format_validation_results[column] = df[column].apply(lambda x: validate_column(x, format)).sum() / len(df[column])
+    #     else:
+    #         format_validation_results[column] = "Column not found in the dataframe"
+    #
+    # return format_validation_results
 
 
 if __name__ == "__main__":
