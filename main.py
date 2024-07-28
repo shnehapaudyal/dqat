@@ -151,7 +151,7 @@ def get_missingvalue(dataset_id):
     return datatype, 200
 
 
-@app.route('/dataset/<string:dataset_id>/datatypeproblem', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/datatype', methods=['GET'])
 def get_inconsistent_datatype(dataset_id):
     datatype = (datasets.get_inconsistent_datatype(dataset_id))
 
@@ -171,7 +171,7 @@ def get_outlier(dataset_id):
     return datatype, 200
 
 
-@app.route('/dataset/<string:dataset_id>/typos', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/typo', methods=['GET'])
 def get_typos(dataset_id):
     typos = (datasets.get_typos(dataset_id))  # Assuming definemetrics has a get_typos value function
 
@@ -179,6 +179,16 @@ def get_typos(dataset_id):
         return {"error": "Typos not found"}, 404
 
     return typos, 200
+
+
+@app.route('/dataset/<string:dataset_id>/format', methods=['GET'])
+def get_formats(dataset_id):
+    formats = (datasets.get_formats(dataset_id))
+
+    if not formats:
+        return {"error": "Formats not found"}, 404
+
+    return formats, 200
 
 
 if __name__ == '__main__':
