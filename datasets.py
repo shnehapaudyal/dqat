@@ -42,4 +42,10 @@ def get_typos(dataset_id):
 def get_formats(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = pd.read_csv(dataset_path)
-    return definemetrics.calculate_non_matching_percentage(df)
+    return definemetrics.calculate_format_validation(df)
+
+
+def get_duplicate(dataset_id):
+    dataset_path = db.read_dataset(dataset_id).path
+    df = pd.read_csv(dataset_path)
+    return definemetrics.duplicate_values(df)

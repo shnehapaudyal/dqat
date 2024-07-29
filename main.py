@@ -190,5 +190,15 @@ def get_formats(dataset_id):
     return formats, 200
 
 
+@app.route('/dataset/<string:dataset_id>/duplicate', methods=['GET'])
+def get_duplicate(dataset_id):
+    duplicate = (datasets.get_duplicate(dataset_id))
+
+    if not duplicate:
+        return {"error": "Duplicate rows not found"}, 404
+
+    return duplicate, 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)

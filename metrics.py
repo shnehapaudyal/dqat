@@ -9,10 +9,6 @@ from definemetrics import calculate_completeness, calculate_uniqueness, calculat
 def get_dataset_metrics(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = pd.read_csv(dataset_path)
-
-    original_df = df.copy()
-    processed_df = df.copy()  # Assume some preprocessing has been done
-
     completeness = calculate_completeness(df)
     uniqueness = calculate_uniqueness(df)
     consistency = calculate_consistency(df, schema)

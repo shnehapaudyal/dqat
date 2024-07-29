@@ -167,8 +167,7 @@ def inconsistent_datatype(df):
     return column_inconsistency
 
 
-# Converting the datatypes according to the dataset values
-def is_numeric(value):
+def is_numeric(value):   # Converting the datatypes according to the dataset values
     try:
         float(value)
         return True
