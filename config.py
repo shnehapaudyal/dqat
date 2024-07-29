@@ -21,3 +21,15 @@ protocols = True
 threat_detection = True
 encryption = True
 documentation = True
+
+supported_formats = {
+    r"\d{4}-\d{2}-\d{2}",
+    r"\d{2}-\d{2}-\d{4}",
+    r"\b([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\b",
+    r"[^@]+@[^@]+\.[^@]+",
+    r"\b\d{5}\b",
+    r"\b\d{4}-?\d{4}-?\d{4}-?\d{4}\b",
+    r"https?://[^\s]+",
+    r"^[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$",
+    r"^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$",
+}

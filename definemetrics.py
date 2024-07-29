@@ -12,6 +12,7 @@ from nltk.corpus import words
 from nltk_utils import download_nltk
 from nltk import corpus, tokenize
 from nltk.tokenize import word_tokenize
+
 download_nltk()
 
 
@@ -166,7 +167,7 @@ def inconsistent_datatype(df):
     return column_inconsistency
 
 
-  # Converting the datatypes according to the dataset values
+# Converting the datatypes according to the dataset values
 def is_numeric(value):
     try:
         float(value)
@@ -221,7 +222,6 @@ def outliers(df):
 
 
 def typos(df):
-
     english_words = set(words.words())
 
     def is_correctly_spelled(value):
@@ -245,26 +245,81 @@ def typos(df):
 
 
 def is_string(value):
-        try:
-            float(value)
-            return True
-        except ValueError:
-            return False
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
+def match_supported_format(value, supported_formats):
+    for format in supported_formats:
+        if re.match(format, str(value)):
+            return supported_formats.index(format)
+    return -1
+
+
+def create_matching_dataframe(df, supported_formats):
+    matching_df = df.copy()
+    for column in df.columns:
+        matching_df[column] = df[column].apply(lambda x: match_supported_format(x, supported_formats))
+    return matching_df
+
+
+def find_max_occurrences(df):
+    max_occurrences_list = {}
+
+    for column in df.columns:
+        value_counts = df[column].value_counts()
+        if not value_counts.empty:
+            max_occurrences = value_counts.idxmax()
+            max_occurrences_list[column] = max_occurrences
+
+    return max_occurrences_list
+
+
+# def calculate_non_matching_count(format_specification_df, dataframe_formats):
+#     non_matching_count = 0
+#
+#     for column in
+#
+#     dataframe_formats = dataframe_formats.append(x: isSameAs(format_specification_df))
+#
+#     for column in format_specification_df.columns:
+#         if not format_specification_df[column].equals(dataframe_formats[column]).all():
+#             non_matching_count += 1
+#
+#     return non_matching_count
 
 
 def calculate_non_matching_percentage(df):
-    non_matching_percentages = {}
+    supported_formats = [
+        r"\d{4}-\d{2}-\d{2}",
+        r"\d{2}-\d{2}-\d{4}",
+        r"\d{1,2}/\d{1,2}/\d{4}",
+        r"\d{1}/\d{2}/\d{4}",
+        r"\b([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\b",
+        r"[^@]+@[^@]+\.[^@]+",
+        r"\b\d{5}\b",
+        r"\b\d{4}-?\d{4}-?\d{4}-?\d{4}\b",
+        r"https?://[^\s]+",
+        r"^[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$",
+        r"^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$",
+        # r".*"
+    ]
 
-    for column in df.columns:
-        if column in config.formats:
-            pattern = re.compile(formats[column])
-            non_matching_count = df[column].apply(lambda x: not bool(pattern.match(str(x)))).sum()
-            total_count = len(df[column])
-            non_matching_percentage = (non_matching_count / total_count) * 100
-            non_matching_percentages[column] = non_matching_percentage
-        else:
-            non_matching_percentages[column] = 0
-    return non_matching_percentages
+    format_specification_df = create_matching_dataframe(df, supported_formats)
+    dataframe_formats = find_max_occurrences(format_specification_df)
+
+    print(format_specification_df)
+
+    result = {'data': format_specification_df.to_dict(), 'value': {}}
+    for column in format_specification_df.columns:
+        column_specs = dataframe_formats[column]
+        items = format_specification_df[column].value_counts()[column_specs]
+        result['value'][column] = (1 - items / len(format_specification_df[column])) * 100
+
+    return result
 
 
 if __name__ == "__main__":
