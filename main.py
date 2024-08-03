@@ -13,6 +13,7 @@ from wtforms.validators import InputRequired
 import datasets
 import db
 import metrics
+from definemetrics import convert_column_types
 from entity.dataset import DatasetRecord
 
 logging.basicConfig(
@@ -111,6 +112,7 @@ def get_dataset_data(dataset_id):
 
     dataset_path = db.read_dataset(dataset_id).path
     df = pd.read_csv(dataset_path)
+    df = convert_column_types(df)
 
     return df.to_json(orient='records'), 200
 

@@ -44,7 +44,7 @@ def calculate_consistency(df, schema):
     for column in df.columns:
         if column in schema:
             consistent_values += df[column].apply(lambda x: isinstance(x, schema[column])).sum()
-    consistency = (consistent_values / total_values) * 100
+    consistency = (1 - consistent_values / total_values) * 100
     return consistency
 
 
@@ -54,7 +54,7 @@ def calculate_conformity(df, formats):
     for column in df.columns:
         if column in formats:
             conforming_values += df[column].apply(lambda x: bool(formats[column].match(str(x)))).sum()
-    conformity = (conforming_values / total_values) * 100
+    conformity = (1 - conforming_values / total_values) * 100
     return conformity
 
 
@@ -84,7 +84,7 @@ def calculate_readability(df):
     total_values = df.size
 
     processed_values = df.map(lambda x: isinstance(x, (str, int, float)) and is_correctly_spelled(x)).sum().sum()
-    readability = (processed_values / total_values) * 100
+    readability = (1 - (processed_values)/ total_values) * 100
     return readability
 
 
@@ -94,7 +94,7 @@ def calculate_ease_of_manipulation(df):
     df, cleaned_df = df.align(cleaned_df, join='outer', fill_value=float('nan'))
     differences = (df != cleaned_df).sum().sum()
     total_values = df.size
-    ease_of_manipulation = (differences / total_values) * 100
+    ease_of_manipulation = (1 - differences / total_values) * 100
     return ease_of_manipulation
 
 
@@ -126,12 +126,13 @@ def calculate_integrity(df):
 
 # Dataset Information
 def datatypes(df):
+    df = df.copy()
     dtypes_dict = df.dtypes.to_dict()
     return {k: str(dtypes_dict[k]) for k in dtypes_dict.keys()}
 
 
 def statistics(df):
-    return df.describe().to_dict()
+    return df.describe(include='all').to_dict()
 
 
 # Dataset Problems
@@ -175,23 +176,39 @@ def is_numeric(value):   # Converting the datatypes according to the dataset val
         return False
 
 
+def clean_and_convert_column(column):
+    if column.dtype == 'object':
+        # Remove commas from column values
+        cleaned_column = column.str.replace(',', '', regex=False)
+
+        numeric_count = cleaned_column.apply(is_numeric).sum()
+        total_count = len(cleaned_column)
+        string_count = total_count - numeric_count
+
+        # If the majority of values are numeric, convert to numeric
+        if numeric_count > string_count:
+            # Convert to numeric and handle NaN
+            numeric_column = pd.to_numeric(cleaned_column, errors='coerce')
+            # Convert to int if no NaN values
+            # if numeric_column.notna().all():
+            #     return numeric_column.astype('int64')
+            return numeric_column
+        else:
+            return cleaned_column.astype(str)
+    else:
+        # If the column is not of type object, return it as is
+        return column
+
+
+def convert_column_types(data_frame):
+    """Apply conversion to all columns in the DataFrame."""
+    for column in data_frame.columns:
+        data_frame[column] = clean_and_convert_column(data_frame[column])
+    return data_frame
+
+
 def outliers(df):
     # Function to convert columns to the appropriate data type
-    def convert_column_types(data_frame):
-        for column in data_frame.columns:
-            # Count the number of numeric and string values in the column
-            numeric_count = data_frame[column].apply(is_numeric).sum()
-            total_count = len(data_frame[column])
-            string_count = total_count - numeric_count
-
-            # If the majority of values are numeric, convert the column to numeric
-            if numeric_count > string_count:
-                data_frame[column] = pd.to_numeric(data_frame[column], errors='coerce')
-            else:
-                data_frame[column] = data_frame[column].astype(str)
-
-        return data_frame
-
     data_frame = convert_column_types(df.copy())
 
     def detect_outliers_std(data_frame, column):
@@ -243,14 +260,6 @@ def typos(df):
     return calculate_typos(df)
 
 
-def is_string(value):
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
-
-
 def match_supported_format(value, supported_formats):
     for format in supported_formats:
         if re.match(format, str(value)):
@@ -277,21 +286,7 @@ def find_max_occurrences(df):
     return max_occurrences_list
 
 
-# def calculate_non_matching_count(format_specification_df, dataframe_formats):
-#     non_matching_count = 0
-#
-#     for column in
-#
-#     dataframe_formats = dataframe_formats.append(x: isSameAs(format_specification_df))
-#
-#     for column in format_specification_df.columns:
-#         if not format_specification_df[column].equals(dataframe_formats[column]).all():
-#             non_matching_count += 1
-#
-#     return non_matching_count
-
-
-def calculate_non_matching_percentage(df):
+def inconsistent_format(df):
     supported_formats = [
         r"\d{4}-\d{2}-\d{2}",
         r"\d{2}-\d{2}-\d{4}",
@@ -319,6 +314,19 @@ def calculate_non_matching_percentage(df):
         result['value'][column] = (1 - items / len(format_specification_df[column])) * 100
 
     return result
+
+
+def duplicate_records(df):
+    # Calculate the number of duplicate records
+    duplicate_records_count = int(df.duplicated().sum())
+
+    # Calculate the percentage of duplicate records
+    duplicate_records_percentage = float((duplicate_records_count / len(df)) * 100)
+
+    return {
+        "duplicate_records_count": duplicate_records_count,
+        "duplicate_records_percentage": duplicate_records_percentage
+    }
 
 
 if __name__ == "__main__":
@@ -380,4 +388,4 @@ if __name__ == "__main__":
     print(f"Security: {security}%")
     print(f"Accessibility: {accessibility}%")
     print(f"Integrity: {integrity}%")
-    # print(f"Score: {score}%")
+    # print(f"Score
