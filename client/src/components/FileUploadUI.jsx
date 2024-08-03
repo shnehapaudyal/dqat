@@ -8,9 +8,17 @@ import {
   Typography,
 } from "@mui/material";
 import Add from "@mui/icons-material/Add";
-import { DescriptionTwoTone, UploadFile } from "@mui/icons-material";
+import {
+  DescriptionTwoTone,
+  FileOpen,
+  Upload,
+  UploadFile,
+  UploadOutlined,
+} from "@mui/icons-material";
 import { useDatasets, useUploadDataset } from "api/query";
-import { red } from "@mui/material/colors";
+import { blue, green, grey, red } from "@mui/material/colors";
+import Dropzone from "react-dropzone";
+import { getFileSize } from "utils/files";
 
 export const FileUploadUI = () => {
   const [selectedFile, setSelectedFile] = React.useState();
@@ -21,14 +29,18 @@ export const FileUploadUI = () => {
 
   const [width, height] = [64, 64];
 
-  const startUpload = async () => {
+  const startUpload = () => {
     if (selectedFile) uploadDataset(selectedFile);
   };
 
-  const { uploadDataset, isUploading } = useUploadDataset();
+  const { uploadDataset, isUploading, isUploadSuccess } = useUploadDataset();
 
   useEffect(() => {
-    if (selectedFile) console.log(selectedFile);
+    if (isUploadSuccess) setSelectedFile();
+  }, [isUploadSuccess]);
+
+  useEffect(() => {
+    if (selectedFile) console.log({ selectedFile });
   }, [selectedFile]);
   // const handleFileUpload = () => {
   //   console.log(selectedFile);
@@ -44,95 +56,94 @@ export const FileUploadUI = () => {
 
   return (
     <Card variant="outlined">
-      <Grid container padding={4}>
-        <Grid item flexGrow={10}>
-          <input
-            accept="text/csv"
-            type="file"
-            id="contained-button-file"
-            onChange={handleFileChange}
-            hidden
-          />
-          <label htmlFor="contained-button-file">
-            <Grid
-              container
-              spacing={2}
-              padding={2}
-              sx={{
-                color: "primary.main",
-                // borderColor: "primary.main",
-                ":hover": {
-                  // borderColor: "primary.light",
-                  color: "primary.light",
-                },
-              }}
-            >
-              <Grid item xs={12}>
-                <Box
-                  width={width}
-                  height={height}
-                  display={"flex"}
-                  border="solid"
-                  borderRadius={1}
+      <Grid container padding={4} rowGap={3}>
+        <Grid item xs={12}>
+          <Typography variant="h6">Upload dataset</Typography>
+          <Typography variant="caption">
+            Select a csv file to analyse
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sx={{ display: "block" }}>
+          <Dropzone
+            disabled={isUploading}
+            accept={{
+              "text/csv": [".csv"],
+            }}
+            multiple={false}
+            onDrop={([file]) => {
+              setSelectedFile(file);
+            }}
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section {...getRootProps()}>
+                <input {...getInputProps()} />
+
+                <Grid
+                  container
+                  gap={2}
+                  padding={2}
+                  alignItems={"center"}
+                  direction={"row"}
                   sx={{
-                    justifyContent: "center",
-                    alignItems: "center",
+                    borderWidth: 1,
+                    borderColor: (!selectedFile ? blue : green)[300],
+                    borderStyle: "dashed",
+                    backgroundColor: (!selectedFile ? blue : green)[100],
+                    borderRadius: 1,
                   }}
                 >
-                  <Add sx={{ height: height / 2, width: width / 2 }} />
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h5">Select a file</Typography>
-              </Grid>
-            </Grid>
-          </label>
-        </Grid>
-        {!!selectedFile && (
-          <Grid item flexGrow={1}>
-            <Card variant="outlined">
-              <Grid
-                container
-                sx={{
-                  color: "primary.main",
-                  padding: 2,
-                }}
-                gap={1}
-                direction="row"
-                columns={12}
-              >
-                <Grid item container xs={6}>
                   <Grid item>
-                    <DescriptionTwoTone sx={{ width: 56, height: 56 }} />
-                  </Grid>
-                  <Grid item container direction="column" xs={6}>
-                    <Grid item>{selectedFile.name}</Grid>
-                    <Grid
-                      item
-                    >{`${(selectedFile.size / (1024 * 1024 * 1024)).toFixed(2)} MB`}</Grid>
-                    <Grid item>{selectedFile.type}</Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button
-                    variant="contained"
-                    startIcon={
-                      isUploading ? (
-                        <CircularProgress size="20px" />
+                    <Box
+                      width={width}
+                      height={height}
+                      display={"flex"}
+                      border="solid"
+                      borderRadius={1}
+                      sx={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      {isUploading ? (
+                        <CircularProgress size={24} />
+                      ) : !selectedFile ? (
+                        <FileOpen />
                       ) : (
-                        <UploadFile />
-                      )
-                    }
-                    onClick={startUpload}
-                    disabled={isUploading}
-                  >
-                    Upload
-                  </Button>
+                        <UploadOutlined />
+                      )}
+                    </Box>
+                  </Grid>
+                  <Grid item flexGrow={1}>
+                    {!selectedFile ? (
+                      <Typography variant="subtitle2">Select a file</Typography>
+                    ) : (
+                      <Grid container direction="column">
+                        <Typography variant="subtitle2">
+                          {selectedFile?.name ?? "File Name"}
+                        </Typography>
+                        <Typography variant="caption">
+                          {getFileSize(selectedFile?.size)}
+                        </Typography>
+                        <Grid item flexShrink={1}>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={(event) => {
+                              startUpload();
+                              event.stopPropagation();
+                            }}
+                          >
+                            <Typography variant="caption">Upload</Typography>
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    )}
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Card>
-          </Grid>
-        )}
+              </section>
+            )}
+          </Dropzone>
+        </Grid>
       </Grid>
     </Card>
   );

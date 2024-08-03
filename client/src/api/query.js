@@ -1,22 +1,24 @@
-import { useQuery as useApi, useMutation, queryCache } from "react-query";
+import { useQuery as useApi, useMutation, useQueryClient } from "react-query";
 import * as api from "./api";
 
 // const useApi = (...args) => useQuery(...args);
 
 export const useUploadDataset = () => {
+  const client = useQueryClient();
+
   const {
     mutate: uploadDataset,
     isLoading: isUploading,
     isSuccess: isUploadSuccess,
+    isError: isUploadError,
   } = useMutation(api.uploadDataset, {
-    onSuccess: (result) => {
+    onSuccess: () => {
       // Invalidate the 'datasets' query key after successful upload
-      queryCache.invalidateQueries(["datasets"]);
-      queryCache.invalidateQueries(["dataset", result.data.dataset_id]);
+      client.invalidateQueries(["datasets"]);
     },
   });
 
-  return { uploadDataset, isLoading: isUploading, isSuccess: isUploadSuccess };
+  return { uploadDataset, isUploading, isUploadSuccess, isUploadError };
 };
 
 export const useDatasets = () =>
