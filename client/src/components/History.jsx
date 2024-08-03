@@ -2,22 +2,25 @@ import { Grid, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDatasets } from "api/query";
 import { useNavigate } from "react-router-dom";
+import { getFileSize } from "utils/files";
 
 export const History = () => {
   const navigate = useNavigate();
   const { data, isLoading } = useDatasets();
 
   const columns = [
-    { field: "dataset_id", headerName: "Id" },
-    { field: "filename", headerName: "File Name" },
-    { field: "uploaded", headerName: "Uploaded at" },
+    { field: "dataset_id", headerName: "Id", flex: 1 },
+    { field: "filename", headerName: "File Name", flex: 1 },
+    { field: "created_at", headerName: "Uploaded at", flex: 1 },
+    {
+      field: "size",
+      headerName: "File Size",
+      flex: 1,
+      renderCell: (params) => (params?.value ? getFileSize(params.value) : "-"),
+    },
   ];
 
-  const rows = data?.records?.map((item) => ({
-    dataset_id: item.dataset_id,
-    filename: item.filename,
-    uploaded: item.uploaded,
-  }));
+  const rows = data?.records ?? [];
 
   // navigate({ to: `/detail/233` });
 
