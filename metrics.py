@@ -4,18 +4,19 @@ from config import *
 from definemetrics import calculate_completeness, calculate_uniqueness, calculate_consistency, calculate_conformity, \
     calculate_timeliness, calculate_volatility, calculate_readability, calculate_ease_of_manipulation, \
     calculate_relevancy, calculate_security, calculate_accessibility, calculate_integrity
+from files import files
 
 
 def get_dataset_metrics(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
-    df = pd.read_csv(dataset_path)
+    df = files.read(dataset_path)
 
     original_df = df.copy()
     processed_df = df.copy()  # Assume some preprocessing has been done
 
     completeness = calculate_completeness(df)
     uniqueness = calculate_uniqueness(df)
-    consistency = calculate_consistency(df, schema)
+    consistency = calculate_consistency(df)
     conformity = calculate_conformity(df, formats)
     timeliness = calculate_timeliness(df, current_date, last_modification_date, creation_date)
     volatility = calculate_volatility(current_date, creation_date, last_modification_date)

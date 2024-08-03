@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import re
 
-import config
+from domain.consistency import calculate_consistency
 
 nltk.download('words')
 nltk.download('punkt')
@@ -38,14 +38,14 @@ def calculate_uniqueness(df):
     return uniqueness
 
 
-def calculate_consistency(df, schema):
-    total_values = df.size
-    consistent_values = 0
-    for column in df.columns:
-        if column in schema:
-            consistent_values += df[column].apply(lambda x: isinstance(x, schema[column])).sum()
-    consistency = (consistent_values / total_values) * 100
-    return consistency
+# def calculate_consistency(df, schema):
+#     total_values = df.size
+#     consistent_values = 0
+#     for column in df.columns:
+#         if column in schema:
+#             consistent_values += df[column].apply(lambda x: isinstance(x, schema[column])).sum()
+#     consistency = (consistent_values / total_values) * 100
+#     return consistency
 
 
 def calculate_conformity(df, formats):
@@ -358,7 +358,7 @@ if __name__ == "__main__":
 
     completeness = calculate_completeness(df)
     uniqueness = calculate_uniqueness(df)
-    consistency = calculate_consistency(df, schema)
+    consistency = calculate_consistency(df)
     conformity = calculate_conformity(df, formats)
     timeliness = calculate_timeliness(df, current_date, last_modification_date, creation_date)
     volatility = calculate_volatility(current_date, creation_date, last_modification_date)

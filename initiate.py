@@ -17,14 +17,14 @@ def get_data():
     return data_frame
 
 
-# def metrics(data_frame):
+# def domain(data_frame):
 #     statistics = data_frame.describe()
 #     info_type = data_frame.info()
 #     return statistics, info_type
 #
 #
 # data_frame = get_data()
-# statistics, info_type = metrics(data_frame)
+# statistics, info_type = domain(data_frame)
 # print(statistics)
 # print(info_type)
 

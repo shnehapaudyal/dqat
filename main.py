@@ -2,29 +2,23 @@ import logging
 import uuid
 
 import pandas as pd
-from flask import Flask, request
-from flask_cors import CORS
 from flask_wtf import FlaskForm
 from wtforms import FileField, SubmitField
 from werkzeug.utils import secure_filename
-import os
 from wtforms.validators import InputRequired
 
 import datasets
 import db
+from files import *
+import domain
 import metrics
 from entity.dataset import DatasetRecord
+from server import app, request
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'supersecretkey'
-app.config['UPLOAD_FOLDER'] = 'static/File'
-
-CORS(app)
 
 
 class UploadFileForm(FlaskForm):
@@ -37,12 +31,10 @@ class UploadFileForm(FlaskForm):
 def upload_dataset():
     file = request.files['File']  # First grab the file
     filename = secure_filename(file.filename)
-    file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], filename)
-    file.save(file_path)  # Then save the file
-    size = os.stat(file_path).st_size
+    size, path = files.save(file, filename)
 
     # Save the dataset record to the database
-    record = DatasetRecord(dataset_id=str(uuid.uuid4()), filename=filename, path=file_path, file_type=file.mimetype,
+    record = DatasetRecord(dataset_id=str(uuid.uuid4()), filename=filename, path=path, file_type=file.mimetype,
                            size=size)
     print(record.json())
     record.save()
@@ -84,7 +76,7 @@ def get_single_dataset_record(dataset_id):
 def get_dataset_metrics(dataset_id):
     dataset_metrics = metrics.get_dataset_metrics(dataset_id)
 
-    if not metrics:
+    if not domain:
         return {"error": "Dataset not found"}, 404
 
     return dataset_metrics, 200
@@ -94,7 +86,7 @@ def get_dataset_metrics(dataset_id):
 def get_dataset_rating(dataset_id):
     dataset_metrics = metrics.calculate_overall_score(dataset_id)
 
-    if not metrics:
+    if not dataset_metrics:
         return {"error": "Dataset not found"}, 404
 
     return {'rating': dataset_metrics}, 200
@@ -110,7 +102,7 @@ def get_dataset_data(dataset_id):
     end_index = start_index + per_page
 
     dataset_path = db.read_dataset(dataset_id).path
-    df = pd.read_csv(dataset_path)
+    df = files.read(dataset_path)
 
     return df.to_json(orient='records'), 200
 

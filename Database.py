@@ -3,8 +3,6 @@ import uuid
 from datetime import datetime
 import json
 import re
-import psycopg2
-from psycopg2.extras import Json
 
 
 def assess_dataset(file_path):
