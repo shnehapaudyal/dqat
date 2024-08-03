@@ -47,7 +47,7 @@ export const FileUploadUI = () => {
       <Grid container padding={4}>
         <Grid item flexGrow={10}>
           <input
-            accept="*"
+            accept="text/csv"
             type="file"
             id="contained-button-file"
             onChange={handleFileChange}
