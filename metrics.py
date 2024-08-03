@@ -10,10 +10,6 @@ from files import files
 def get_dataset_metrics(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-
-    original_df = df.copy()
-    processed_df = df.copy()  # Assume some preprocessing has been done
-
     completeness = calculate_completeness(df)
     uniqueness = calculate_uniqueness(df)
     consistency = calculate_consistency(df)

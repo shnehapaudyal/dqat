@@ -10,4 +10,4 @@ flask-cors~=4.0.1
 flask_wtf~=1.2.1
 boto3~=1.34.152
 fsspec~=2024.6.1
-s3fs~=1.34.152
+s3fs~=2024.6.1
