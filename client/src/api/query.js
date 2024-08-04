@@ -49,6 +49,8 @@ export const useDatasetTypes = (datasetId) =>
 
 export const useDatasetStat = (datasetId) =>
   useApi(["dataset", datasetId, "stats"], () => api.getDatasetStats(datasetId));
+export const useDatasetIssues = () =>
+  useApi(["issues"], () => api.getDatasetIssues());
 
 export const useMissingValue = (datasetId, enabled) =>
   useApi(
