@@ -1,44 +1,19 @@
-import { getDatasetIssue } from "api/api";
 import {
-  useDatasetIssues,
   useInconsistency,
   useMissingValue,
   useOutlier,
   useTypo,
 } from "api/query";
-import { useQuery, useQueryClient } from "react-query";
 
-const { useEffect, useState, useMemo } = require("react");
+const { useEffect, useState } = require("react");
 
 export const useIssues = (datasetId) => {
   // issues -> missingValue, inconsistency, typo, outlier
 
-  const { data: issues, isLoading: isLoadingIssues } = useDatasetIssues();
   const [data, setData] = useState({
-    headers: [],
+    headers: ["column", "missingValue", "inconsistency", "typo", "outlier"],
     data: {},
   });
-
-  const queryClient = useQueryClient();
-
-  const headers = useMemo(
-    () => (issues ? ["column", ...issues] : []),
-    [issues],
-  );
-  useEffect(() => {
-    const issuesData = { headers };
-
-    if (issues) {
-      issues.forEach((issue) => {
-        const issueData = queryClient.fetchQuery({
-          queryKey: ["dataset", datasetId, "issues", issue],
-          queryFn: () => getDatasetIssue(datasetId, issue),
-        });
-
-        console.log(issue);
-      });
-    }
-  }, [datasetId, issues, queryClient]);
 
   const { data: missingValueData, isLoading: isLoadingMissingValue } =
     useMissingValue(datasetId);
