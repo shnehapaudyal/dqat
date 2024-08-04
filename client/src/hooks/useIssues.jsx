@@ -1,23 +1,15 @@
 import { getDatasetIssue } from "api/api";
-import {
-  useDatasetIssues,
-  useInconsistency,
-  useMissingValue,
-  useOutlier,
-  useTypo,
-} from "api/query";
-import { useQuery, useQueryClient } from "react-query";
+import { useDatasetIssues } from "api/query";
+import { useQueryClient } from "react-query";
 
 const { useEffect, useState, useMemo } = require("react");
 
 export const useIssues = (datasetId) => {
   // issues -> missingValue, inconsistency, typo, outlier
 
-  const { data: issues, isLoading: isLoadingIssues } = useDatasetIssues();
-  const [data, setData] = useState({
-    headers: [],
-    data: {},
-  });
+  const { data: issues, isLoading } = useDatasetIssues();
+  const [isLoadingIssues, setLoadingIssues] = useState();
+  const [data, setData] = useState({});
 
   const queryClient = useQueryClient();
 
@@ -25,75 +17,67 @@ export const useIssues = (datasetId) => {
     () => (issues ? ["column", ...issues] : []),
     [issues],
   );
+
   useEffect(() => {
     const computeIssues = async () => {
-      const issuesData = {
-        headers,
-        data: {},
-      };
-
-      headers.forEach(
-        (header) => (issuesData.data[header] = { column: header }),
-      );
+      setLoadingIssues(true);
+      const issuesData = {};
 
       console.log("issueData", "loading issue data", { issuesData });
 
-      if (issues) {
-        for (const issue of issues) {
-          try {
-            const issueData = await queryClient.fetchQuery({
-              queryKey: ["dataset", datasetId, "issues", issue],
-              queryFn: () => getDatasetIssue(datasetId, issue),
-            });
+      for (const issue of issues ?? []) {
+        try {
+          const issueData = await queryClient.fetchQuery({
+            queryKey: ["dataset", datasetId, "issues", issue],
+            queryFn: () => getDatasetIssue(datasetId, issue),
+          });
 
-            Object.keys(issueData).forEach((column) => {
-              issuesData.data[column] ??= { column };
-              issuesData.data[column][issue] = issueData[column];
-            });
-          } catch (error) {}
-        }
+          Object.keys(issueData).forEach((column) => {
+            issuesData[column] ??= { column };
+            issuesData[column][issue] = issueData[column];
+          });
+        } catch (error) {}
       }
 
-      console.log("issueData", "loaded issue data", { issuesData });
+      setData(issuesData);
+      console.log("issueData", { issuesData });
+      setLoadingIssues(false);
     };
 
     computeIssues();
   }, [datasetId, headers, issues, queryClient]);
 
-  const { data: missingValueData, isLoading: isLoadingMissingValue } =
-    useMissingValue(datasetId);
-  const { data: inconsistencyData, isLoading: isLoadingInconcistency } =
-    useInconsistency(datasetId, !!missingValueData);
-  const { data: outlierData, isLoading: isLoadingOutlier } = useOutlier(
-    datasetId,
-    !!missingValueData,
-  );
-  const { data: typoData, isLoading: isLoadingTypo } = useTypo(
-    datasetId,
-    !!missingValueData,
-  );
+  // const { data: missingValueData, isLoading: isLoadingMissingValue } =
+  //   useMissingValue(datasetId);
+  // const { data: inconsistencyData, isLoading: isLoadingInconcistency } =
+  //   useInconsistency(datasetId, !!missingValueData);
+  // const { data: outlierData, isLoading: isLoadingOutlier } = useOutlier(
+  //   datasetId,
+  //   !!missingValueData,
+  // );
+  // const { data: typoData, isLoading: isLoadingTypo } = useTypo(
+  //   datasetId,
+  //   !!missingValueData,
+  // );
 
-  useEffect(() => {
-    const columns = missingValueData ? Object.keys(missingValueData) : [];
-    const result = {};
-    columns.forEach((column) => {
-      result[column] = {
-        missingValue: (missingValueData ?? {})[column],
-        inconsistency: (inconsistencyData ?? {})[column],
-        outlier: (outlierData ?? {})[column],
-        typo: (typoData ?? {})[column],
-      };
-    });
+  // useEffect(() => {
+  //   const columns = missingValueData ? Object.keys(missingValueData) : [];
+  //   const result = {};
+  //   columns.forEach((column) => {
+  //     result[column] = {
+  //       missingValue: (missingValueData ?? {})[column],
+  //       inconsistency: (inconsistencyData ?? {})[column],
+  //       outlier: (outlierData ?? {})[column],
+  //       typo: (typoData ?? {})[column],
+  //     };
+  //   });
 
-    setData((data) => ({ ...data, data: result }));
-  }, [inconsistencyData, missingValueData, outlierData, typoData]);
+  //   setData((data) => ({ ...data, data: result }));
+  // }, [inconsistencyData, missingValueData, outlierData, typoData]);
 
   return {
+    headers,
     data,
-    isLoading:
-      isLoadingMissingValue ||
-      isLoadingInconcistency ||
-      isLoadingOutlier ||
-      isLoadingTypo,
+    isLoading: isLoading || isLoadingIssues,
   };
 };
