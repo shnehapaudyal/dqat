@@ -1,6 +1,6 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { useDatasetTypes } from "api/query";
 import { useState } from "react";
+import { DataGrid } from "./DataGrid";
 
 export const DatasetTypeInfo = ({ datasetId }) => {
   const [page, setPage] = useState(0);
@@ -27,6 +27,7 @@ export const DatasetTypeInfo = ({ datasetId }) => {
 
   return (
     <DataGrid
+      title="Dataset Types"
       loading={isLoading}
       density="compact"
       columns={coldef}

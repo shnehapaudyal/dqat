@@ -9,6 +9,7 @@ import { DatasetMetricsPage } from "./DatasetMetricsPage";
 import { DatasetDataPage } from "./DatasetDataPage";
 import { useEffect, useRef } from "react";
 import { DatasetIssuesPage } from "./DatasetIssuesPage";
+import { grey } from "@mui/material/colors";
 
 export const DatasetPage = () => {
   const { id } = useParams("id");
@@ -30,7 +31,7 @@ export const DatasetPage = () => {
   }, [dataset, filesize]);
 
   return (
-    <Grid container justifyContent="space-around" padding={4} rowGap={1}>
+    <Grid container justifyContent="space-around" padding={4}>
       <Grid item xs={12}>
         <Card sx={{ padding: 2 }} variant="outlined">
           <Grid container columnGap={2} alignItems="center">
@@ -49,7 +50,7 @@ export const DatasetPage = () => {
           </Grid>
         </Card>
       </Grid>
-      <Grid xs={12} item>
+      <Grid xs={12} item marginTop={2}>
         <Tabs
           value={selectedTab}
           onChange={(_, newTab) => {
@@ -64,22 +65,18 @@ export const DatasetPage = () => {
           }}
           ref={tabsRef}
         >
-          <Tab label="Quality" value="quality" />
           <Tab label="Data" value="data" />
+          <Tab label="Quality" value="quality" />
           <Tab label="Issues" value="issues" />
         </Tabs>
-      </Grid>
-      <Grid item xs={12}>
-        <CustomTabPanel index="quality" value={selectedTab}>
-          <DatasetMetricsPage datasetId={id} />
-        </CustomTabPanel>
       </Grid>
       <Grid item xs={12}>
         <CustomTabPanel index="data" value={selectedTab}>
           <DatasetDataPage datasetId={id} />
         </CustomTabPanel>
-      </Grid>
-      <Grid item xs={12}>
+        <CustomTabPanel index="quality" value={selectedTab}>
+          <DatasetMetricsPage datasetId={id} />
+        </CustomTabPanel>
         <CustomTabPanel index="issues" value={selectedTab}>
           <DatasetIssuesPage datasetId={id} />
         </CustomTabPanel>

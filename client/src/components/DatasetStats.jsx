@@ -1,6 +1,6 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { useDatasetStat } from "api/query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { DataGrid } from "./DataGrid";
 
 const transposeObject = (data) => {
   if (!data) return [];
@@ -30,11 +30,14 @@ export const DatasetStats = ({ datasetId }) => {
   const [page, setPage] = useState(0);
   const { data, isLoading } = useDatasetStat(datasetId);
 
-  const [headers, transposed] = transposeObject(data);
+  const [headers, transposed] = useMemo(() => transposeObject(data), [data]);
+
+  useEffect(() => console.log("datastats", { data }), [data]);
 
   useEffect(() => {
     console.log("transposed", { headers, transposed });
   }, [headers, transposed]);
+
   const coldef = transposed
     ? [
         {
@@ -47,7 +50,10 @@ export const DatasetStats = ({ datasetId }) => {
           label: key,
           field: key,
           flex: 1,
-          renderCell: (params) => +parseFloat(params.value).toFixed(2),
+          renderCell: (params) => {
+            const floatValue = parseFloat(params.value);
+            return Number.isNaN(floatValue) ? "-" : +floatValue.toFixed(2);
+          },
         })),
       ]
     : [];
@@ -57,6 +63,7 @@ export const DatasetStats = ({ datasetId }) => {
   return (
     <DataGrid
       loading={isLoading}
+      title="Dataset Stats"
       density="compact"
       columns={coldef}
       rows={rowDef}

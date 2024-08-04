@@ -1,7 +1,6 @@
 import { Card, Grid, Typography } from "@mui/material";
-import { useDataset, useDatasetRating } from "api/query";
+import { useDatasetRating } from "api/query";
 import { DatasetGauge, DatasetMetricsList } from "components";
-import { useParams } from "react-router-dom";
 
 export const DatasetMetricsPage = ({ datasetId }) => {
   const { data } = useDatasetRating(datasetId);

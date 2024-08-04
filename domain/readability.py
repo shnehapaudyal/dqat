@@ -8,8 +8,6 @@ nltk.download('punkt')
 from nltk_utils import download_nltk
 from nltk import corpus, tokenize
 
-download_nltk()
-
 # Load English words from NLTK
 # english_words = {eng.lower() for eng in set(corpus.words.words('en'))}
 

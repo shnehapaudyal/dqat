@@ -1,18 +1,18 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { DatasetGauge } from "./DatasetGauge";
 import { useDatasetMetrics } from "api/query";
 import { snakeCaseToTitleCase } from "utils/strings";
+import { DataGrid } from "./DataGrid";
 
 export const DatasetMetricsList = ({ datasetId }) => {
-  const metrics = useDatasetMetrics(datasetId);
+  const { data: metrics, isLoading } = useDatasetMetrics(datasetId);
 
-  // console.log(metrics.data, datasetId);
+  // console.log(metrics, datasetId);
 
-  const rows = metrics.data
-    ? Object.keys(metrics.data).map((key) => ({
+  const rows = metrics
+    ? Object.keys(metrics).map((key) => ({
         id: key,
         name: snakeCaseToTitleCase(key),
-        score: metrics.data[key],
+        score: metrics[key],
       }))
     : [];
 
@@ -34,5 +34,5 @@ export const DatasetMetricsList = ({ datasetId }) => {
     { field: "name", headerName: "Metric", flex: 3 },
   ];
 
-  return <DataGrid rows={rows} columns={columns} />;
+  return <DataGrid rows={rows} columns={columns} loading={isLoading} />;
 };

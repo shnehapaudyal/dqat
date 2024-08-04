@@ -13,12 +13,15 @@ from files import *
 import domain
 import metrics
 from entity.dataset import DatasetRecord
+from nltk_utils import download_nltk
 from server import app, request
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
+
+download_nltk()
 
 
 class UploadFileForm(FlaskForm):

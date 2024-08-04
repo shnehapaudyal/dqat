@@ -1,8 +1,8 @@
 import { Grid, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { useDatasets } from "api/query";
 import { useNavigate } from "react-router-dom";
 import { getFileSize } from "utils/files";
+import { DataGrid } from "./DataGrid";
 
 export const History = () => {
   const navigate = useNavigate();

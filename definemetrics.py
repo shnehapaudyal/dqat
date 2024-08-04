@@ -39,7 +39,7 @@ def datatypes(df):
 
 
 def statistics(df):
-    return df.describe(include='all').to_dict()
+    return df.describe(include='all').to_json()
 
 
 # Dataset Problems

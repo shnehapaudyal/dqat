@@ -1,11 +1,11 @@
 import { snakeCaseToTitleCase } from "utils/strings";
 
-import { DataGrid } from "@mui/x-data-grid";
 import { useIssues } from "hooks/useIssues";
 import { useMemo } from "react";
+import { DataGrid } from "./DataGrid";
 
 export const DatasetIssues = ({ datasetId }) => {
-  const { headers, data: issues } = useIssues(datasetId);
+  const { headers, data: issues, isLoading } = useIssues(datasetId);
 
   const colDef = useMemo(
     () =>
@@ -23,5 +23,5 @@ export const DatasetIssues = ({ datasetId }) => {
     [issues],
   );
 
-  return <DataGrid columns={colDef} rows={rowDef} />;
+  return <DataGrid columns={colDef} rows={rowDef} loading={isLoading} />;
 };

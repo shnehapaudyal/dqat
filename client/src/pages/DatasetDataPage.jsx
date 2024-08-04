@@ -1,7 +1,7 @@
 import { Box, Grid, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { useDatasetData } from "api/query";
 import { DatasetTypeInfo } from "components";
+import { DataGrid } from "components/DataGrid";
 import { DatasetStats } from "components/DatasetStats";
 import React, { useMemo, useState } from "react";
 
@@ -40,9 +40,6 @@ export const DatasetDataPage = ({ datasetId }) => {
 
   return (
     <Grid item container xs={12} rowGap={2}>
-      <Grid item xs={12}>
-        <Typography variant="h6">Overview</Typography>
-      </Grid>
       <Grid item xs={12} sm={4}>
         <Box sx={{ marginRight: 1 }}>
           <DatasetTypeInfo datasetId={datasetId} />
@@ -54,12 +51,9 @@ export const DatasetDataPage = ({ datasetId }) => {
         </Box>
       </Grid>
 
-      <Grid item xs={12}>
-        <Typography variant="h6">Data Sample</Typography>
-      </Grid>
-
       <Grid item xs={12} flexGrow>
         <DataGrid
+          title="Data Sample"
           density="compact"
           loading={isLoading}
           rows={value ?? []}
