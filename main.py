@@ -12,7 +12,7 @@ import db
 from files import *
 import domain
 import metrics
-from definemetrics import convert_column_types
+# from definemetrics import convert_column_types
 from entity.dataset import DatasetRecord
 from server import app, request
 
@@ -104,6 +104,7 @@ def get_dataset_data(dataset_id):
 
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
+    from domain.consistency import convert_column_types
     df = convert_column_types(df)
 
     return df.to_json(orient='records'), 200
@@ -135,7 +136,6 @@ def get_datatypes(dataset_id):
     return datatype, 200
 
 
-#Datasets problems
 @app.route('/dataset/<string:dataset_id>/issues/missing', methods=['GET'])
 def get_missingvalue(dataset_id):
     datatype = (datasets.get_missingvalue(dataset_id))  # Assuming definemetrics has a get_missing valuefunction

@@ -4,6 +4,7 @@ from flask import jsonify
 import db
 import definemetrics
 from files import files
+import domain
 
 
 def get_datatypes(dataset_id):
@@ -21,7 +22,7 @@ def get_statistics(dataset_id):
 def get_missingvalue(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return definemetrics.missingvalues(df)
+    return domain.completeness.missingvalues(df)
 
 
 def get_inconsistent_datatype(dataset_id):
