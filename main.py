@@ -135,6 +135,7 @@ def get_datatypes(dataset_id):
     return datatype, 200
 
 
+#Datasets problems
 @app.route('/dataset/<string:dataset_id>/issues/missing', methods=['GET'])
 def get_missingvalue(dataset_id):
     datatype = (datasets.get_missingvalue(dataset_id))  # Assuming definemetrics has a get_missing valuefunction
@@ -175,7 +176,7 @@ def get_typos(dataset_id):
     return typos, 200
 
 
-@app.route('/dataset/<string:dataset_id>/format', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/issues/format', methods=['GET'])
 def get_formats(dataset_id):
     formats = (datasets.get_formats(dataset_id))
     if not formats:
@@ -184,7 +185,7 @@ def get_formats(dataset_id):
     return formats, 200
 
 
-@app.route('/dataset/<string:dataset_id>/duplicate', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/issues/duplicate', methods=['GET'])
 def get_duplicate(dataset_id):
     duplicate = (datasets.get_duplicate(dataset_id))
 
