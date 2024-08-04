@@ -29,14 +29,11 @@ def calculate_readability(df):
 
 def typos(df):
     # Function to calculate readability scores, counts, and typo percentages
-    def calculate_typos(df):
-        typo_percentages = {}
+    typo_percentages = {}
 
-        for column in df.columns:
-            correctly_spelled = df[column].apply(is_correctly_spelled).sum()
-            total_count = len(df[column])
-            typo_percentages[column] = ((total_count - correctly_spelled) / total_count) * 100
+    for column in df.columns:
+        correctly_spelled = df[column].apply(is_correctly_spelled).sum()
+        total_count = len(df[column])
+        typo_percentages[column] = ((total_count - correctly_spelled) / total_count) * 100
 
-        return typo_percentages
-
-    return calculate_typos(df)
+    return typo_percentages

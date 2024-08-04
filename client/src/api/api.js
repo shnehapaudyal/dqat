@@ -77,6 +77,16 @@ export const getDatasetStats = async (datasetId) => {
   return response.data;
 };
 
+export const getDatasetIssues = async () => {
+  const response = await api.get(`/issues`);
+  return response.data;
+};
+
+export const getDatasetIssue = async (datasetId, issue) => {
+  const response = await api.get(`/dataset/${datasetId}/issues/${issue}`);
+  return response.data;
+}
+
 export const getMissingValue = async (datasetId) => {
   const response = await api.get(`/dataset/${datasetId}/issues/missing`);
   return response.data;

@@ -135,8 +135,20 @@ def get_datatypes(dataset_id):
     return datatype, 200
 
 
-#Datasets problems
-@app.route('/dataset/<string:dataset_id>/issues/missing', methods=['GET'])
+# Datasets problems
+@app.route('/issues', methods=['GET'])
+def get_issues_list():
+    return [
+        'missing_values'
+        'inconsistency'
+        'outliers'
+        'typo'
+        'invalid_format'
+        'duplicate'
+    ]
+
+
+@app.route('/dataset/<string:dataset_id>/issues/missing_values', methods=['GET'])
 def get_missingvalue(dataset_id):
     datatype = (datasets.get_missingvalue(dataset_id))  # Assuming definemetrics has a get_missing valuefunction
 
@@ -156,7 +168,7 @@ def get_inconsistent_datatype(dataset_id):
     return datatype, 200
 
 
-@app.route('/dataset/<string:dataset_id>/issues/outlier', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/issues/outliers', methods=['GET'])
 def get_outlier(dataset_id):
     datatype = (datasets.get_outlier(dataset_id))  # Assuming definemetrics has a get_outlier value function
 
@@ -176,7 +188,7 @@ def get_typos(dataset_id):
     return typos, 200
 
 
-@app.route('/dataset/<string:dataset_id>/issues/format', methods=['GET'])
+@app.route('/dataset/<string:dataset_id>/issues/invalid_format', methods=['GET'])
 def get_formats(dataset_id):
     formats = (datasets.get_formats(dataset_id))
     if not formats:
