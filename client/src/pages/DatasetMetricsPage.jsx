@@ -9,7 +9,7 @@ export const DatasetMetricsPage = ({ datasetId }) => {
   return (
     <Grid container rowGap={2}>
       <Grid item xs={12}>
-        <Card>
+        <Card variant="outlined">
           <Grid container justifyContent="space-around" gap={2} margin={2}>
             <Grid item flexShrink>
               <DatasetGauge value={data?.rating ?? 0} width={200} halfMode />

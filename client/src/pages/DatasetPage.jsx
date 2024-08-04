@@ -32,7 +32,7 @@ export const DatasetPage = () => {
   return (
     <Grid container justifyContent="space-around" padding={4} rowGap={1}>
       <Grid item xs={12}>
-        <Card sx={{ padding: 2 }}>
+        <Card sx={{ padding: 2 }} variant="outlined">
           <Grid container columnGap={2} alignItems="center">
             <Grid item flexShrink={1}>
               <Icon path={mdiTableLarge} size={1} />
