@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
@@ -7,16 +7,9 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import Add from "@mui/icons-material/Add";
-import {
-  DescriptionTwoTone,
-  FileOpen,
-  Upload,
-  UploadFile,
-  UploadOutlined,
-} from "@mui/icons-material";
-import { useDatasets, useUploadDataset } from "api/query";
-import { blue, green, grey, red } from "@mui/material/colors";
+import { FileOpen, UploadOutlined } from "@mui/icons-material";
+import { useUploadDataset } from "api/query";
+import { grey } from "@mui/material/colors";
 import Dropzone from "react-dropzone";
 import { getFileSize } from "utils/files";
 
@@ -86,9 +79,9 @@ export const FileUploadUI = () => {
                   direction={"row"}
                   sx={{
                     borderWidth: 1,
-                    borderColor: (!selectedFile ? blue : green)[300],
+                    borderColor: (!selectedFile ? grey : grey)[300],
                     borderStyle: "dashed",
-                    backgroundColor: (!selectedFile ? blue : green)[100],
+                    backgroundColor: (!selectedFile ? grey : grey)[100],
                     borderRadius: 1,
                   }}
                 >
@@ -117,8 +110,8 @@ export const FileUploadUI = () => {
                     {!selectedFile ? (
                       <Typography variant="subtitle2">Select a file</Typography>
                     ) : (
-                      <Grid container direction="column">
-                        <Typography variant="subtitle2">
+                      <Grid container direction="column" gap={0}>
+                        <Typography variant="caption">
                           {selectedFile?.name ?? "File Name"}
                         </Typography>
                         <Typography variant="caption">
@@ -128,6 +121,7 @@ export const FileUploadUI = () => {
                           <Button
                             variant="contained"
                             size="small"
+                            disabled={isUploading}
                             onClick={(event) => {
                               startUpload();
                               event.stopPropagation();
