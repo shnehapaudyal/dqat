@@ -11,7 +11,7 @@ export const useIssues = (datasetId) => {
   // issues -> missingValue, inconsistency, typo, outlier
 
   const [data, setData] = useState({
-    headers: ["column", "missingValue", "inconsistency", "typo", "outlier"],
+    headers: ["column", "missingValue", "inconsistency", "typo", "outliers"],
     data: {},
   });
 

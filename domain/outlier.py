@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import consistency
 
 
 def is_numeric(value):  # Converting the datatypes according to the dataset values

@@ -88,7 +88,7 @@ export const getDatasetIssue = async (datasetId, issue) => {
 }
 
 export const getMissingValue = async (datasetId) => {
-  const response = await api.get(`/dataset/${datasetId}/issues/missing`);
+  const response = await api.get(`/dataset/${datasetId}/issues/missing_values`);
   return response.data;
 };
 
@@ -98,7 +98,7 @@ export const getInconsistency = async (datasetId) => {
 };
 
 export const getOutlier = async (datasetId) => {
-  const response = await api.get(`/dataset/${datasetId}/issues/outlier`);
+  const response = await api.get(`/dataset/${datasetId}/issues/outliers`);
   return response.data;
 };
 
