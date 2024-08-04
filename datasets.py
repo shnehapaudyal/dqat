@@ -3,6 +3,7 @@ from flask import jsonify
 
 import db
 import definemetrics
+from domain import outlier
 from files import files
 import domain
 
@@ -34,7 +35,7 @@ def get_inconsistent_datatype(dataset_id):
 def get_outlier(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return domain.outlier.outliers(df)
+    return outlier.outliers(df)
 
 
 def get_typos(dataset_id):

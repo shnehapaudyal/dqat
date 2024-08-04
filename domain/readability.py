@@ -1,15 +1,22 @@
 import nltk
+
+from domain.consistency import is_numeric
+
 nltk.download('words')
 nltk.download('punkt')
 from nltk.corpus import words
 from nltk_utils import download_nltk
 from nltk import corpus, tokenize
 from nltk.tokenize import word_tokenize
-download_nltk()
 
+download_nltk()
 
 # Load English words from NLTK
 english_words = set(corpus.words.words())
+
+
+def is_text(value):
+    return isinstance(value, (str, object))
 
 
 def is_correctly_spelled(value):
@@ -22,8 +29,8 @@ def is_correctly_spelled(value):
 def calculate_readability(df):
     # Helper function to check if a value is correctly spelled
     total_values = df.size
-    processed_values = df.map(lambda x: isinstance(x, (str, int, float)) and is_correctly_spelled(x)).sum().sum()
-    readability = (1 - processed_values / total_values) * 100
+    correctly_spelled_values = df.map(lambda x: not is_text(x) or is_correctly_spelled(x)).sum().sum()
+    readability = (correctly_spelled_values / total_values) * 100
     return readability
 
 
