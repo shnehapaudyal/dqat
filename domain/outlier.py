@@ -1,13 +1,15 @@
 import pandas as pd
 import numpy as np
 
+from domain.consistency import is_numeric
 
-def is_numeric(value):  # Converting the datatypes according to the dataset values
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
+
+# def is_numeric(value):  # Converting the datatypes according to the dataset values
+#     try:
+#         float(value)
+#         return True
+#     except ValueError:
+#         return False
 
 
 def clean_and_convert_column(column):

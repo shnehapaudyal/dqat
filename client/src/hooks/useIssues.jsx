@@ -29,13 +29,17 @@ export const useIssues = (datasetId) => {
   );
 
   useEffect(() => {
+    console.log("issues", { outlierData });
+  }, [outlierData]);
+
+  useEffect(() => {
     const columns = missingValueData ? Object.keys(missingValueData) : [];
     const result = {};
     columns.forEach((column) => {
       result[column] = {
         missingValue: (missingValueData ?? {})[column],
         inconsistency: (inconsistencyData ?? {})[column],
-        outlier: (outlierData ?? {})[column],
+        outliers: (outlierData ?? {})[column],
         typo: (typoData ?? {})[column],
       };
     });
