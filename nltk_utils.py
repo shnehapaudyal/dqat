@@ -17,6 +17,7 @@ def download_nltk():
     download_nltk_data(
         list_of_resources=[
             'words',
+            'wordnet',
             'stopwords',
             'punkt',
         ],

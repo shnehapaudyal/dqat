@@ -138,12 +138,12 @@ def get_datatypes(dataset_id):
 @app.route('/issues', methods=['GET'])
 def get_issues_list():
     return [
-        'missing_values'
-        'inconsistency'
-        'outliers'
-        'typo'
-        'invalid_format'
-        'duplicate'
+        'missing_values',
+        'inconsistency',
+        'outliers',
+        'typo',
+        'invalid_format',
+        'duplicate',
     ]
 
 
