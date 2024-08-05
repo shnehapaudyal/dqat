@@ -11,7 +11,12 @@ export const DatasetMetricsPage = ({ datasetId }) => {
         <Card variant="outlined">
           <Grid container justifyContent="space-around" gap={2} margin={2}>
             <Grid item flexShrink>
-              <DatasetGauge value={data?.rating ?? 0} width={200} halfMode />
+              <DatasetGauge
+                animate
+                value={data?.rating ?? 0}
+                width={200}
+                halfMode
+              />
             </Grid>
             <Grid item flexGrow>
               <Grid item container flexShrink direction="column">

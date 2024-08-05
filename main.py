@@ -106,8 +106,7 @@ def get_dataset_data(dataset_id):
 
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    from domain.consistency import convert_column_types
-    df = convert_column_types(df)
+    # df = convert_column_types(df)
 
     return df.to_json(orient='records'), 200
 

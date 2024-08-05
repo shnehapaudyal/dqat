@@ -32,9 +32,7 @@ export const DatasetTypeInfo = ({ datasetId }) => {
       density="compact"
       columns={coldef}
       rows={rowDef}
-      pageSizeOptions={[10]}
-      paginationModel={{ pageSize: 10, page }}
-      onPaginationModelChange={(_, page) => setPage(page)}
+      itemsPerPage={10}
       getRowId={(row) => row.column}
     />
   );

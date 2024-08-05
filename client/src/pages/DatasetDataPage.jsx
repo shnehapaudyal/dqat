@@ -3,7 +3,7 @@ import { useDatasetData } from "api/query";
 import { DatasetTypeInfo } from "components";
 import { DataGrid } from "components/DataGrid";
 import { DatasetStats } from "components/DatasetStats";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 export const DatasetDataPage = ({ datasetId }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,6 +11,13 @@ export const DatasetDataPage = ({ datasetId }) => {
   const pageSize = 25;
 
   const { data, isLoading } = useDatasetData(datasetId, currentPage, pageSize);
+
+  useEffect(() => {
+    console.log(
+      "DatasetDataPage",
+      data?.find((dataset) => dataset.Year === 2023),
+    );
+  }, [data]);
 
   const columns = useMemo(() => {
     const headers = data?.length ? Object.keys(data[0]) : [];
@@ -24,11 +31,7 @@ export const DatasetDataPage = ({ datasetId }) => {
   }, [data]);
 
   const value = useMemo(
-    () =>
-      data?.map((row, index) => {
-        row.id = index + 1;
-        return row;
-      }),
+    () => data?.map((row, index) => ({ ...row, id: index + 1 })),
     [data],
   );
 

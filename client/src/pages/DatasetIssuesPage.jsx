@@ -1,6 +1,6 @@
 import { DatasetIssues } from "components/DatasetIssues";
 
-const { Grid, Typography } = require("@mui/material");
+const { Grid } = require("@mui/material");
 
 export const DatasetIssuesPage = ({ datasetId }) => {
   return (
