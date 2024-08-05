@@ -13,6 +13,14 @@ export const DatasetIssues = ({ datasetId }) => {
         field: header,
         headerName: snakeCaseToTitleCase(header),
         flex: 1,
+        renderCell: ({ value }) => {
+          if (Number.isNaN(value) || Number.isFinite(value)) {
+            const floatValue = parseFloat(value);
+            return Number.isNaN(floatValue) ? "-" : +floatValue.toFixed(2);
+          } else {
+            return value;
+          }
+        },
       })),
     [headers],
   );

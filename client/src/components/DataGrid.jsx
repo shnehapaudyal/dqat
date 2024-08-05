@@ -7,7 +7,9 @@ export const DataGrid = ({ title, itemsPerPage = 50, ...props }) => {
     [props?.loading, title],
   );
 
-  itemsPerPage = Math.min(props?.rows.length, itemsPerPage);
+  itemsPerPage = props?.rows?.length
+    ? Math.min(props?.rows?.length, itemsPerPage)
+    : itemsPerPage;
 
   const grid = (
     <MUIDataGrid

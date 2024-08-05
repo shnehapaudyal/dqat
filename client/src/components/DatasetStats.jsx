@@ -27,12 +27,17 @@ const transposeObject = (data) => {
 };
 
 export const DatasetStats = ({ datasetId }) => {
-  const [page, setPage] = useState(0);
   const { data, isLoading } = useDatasetStat(datasetId);
 
-  const [headers, transposed] = useMemo(() => transposeObject(data), [data]);
+  const [[headers, transposed], setTransposed] = useState([]);
 
-  useEffect(() => console.log("datastats", { data }), [data]);
+  useEffect(() => {
+    if (data) {
+      new Promise((resolve) => resolve(transposeObject(data))).then(
+        setTransposed,
+      );
+    }
+  }, [data, isLoading]);
 
   useEffect(() => {
     console.log("transposed", { headers, transposed });
