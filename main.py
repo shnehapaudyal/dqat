@@ -131,7 +131,7 @@ def get_statistics(dataset_id):
 def get_datatypes(dataset_id):
     datatype = (datasets.get_datatypes(dataset_id))  # Assuming definemetrics has a get_datatypes function
 
-    if not datatype:
+    if datatype is None:
         return {"error": "Datatype not found"}, 404
 
     return datatype, 200

@@ -3,15 +3,14 @@ from flask import jsonify
 
 import db
 import definemetrics
-from domain import outlier
+from domain import outlier, types, completeness, readability
 from files import files
-import domain
 
 
 def get_datatypes(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return definemetrics.datatypes(df)
+    return types.get_column_types(df)
 
 
 def get_statistics(dataset_id):
@@ -23,7 +22,7 @@ def get_statistics(dataset_id):
 def get_missingvalue(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return domain.completeness.missingvalues(df)
+    return completeness.missingvalues(df)
 
 
 def get_inconsistent_datatype(dataset_id):
@@ -41,7 +40,7 @@ def get_outlier(dataset_id):
 def get_typos(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return domain.readability.typos(df)
+    return readability.typos(df)
 
 
 def get_formats(dataset_id):

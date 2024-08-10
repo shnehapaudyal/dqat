@@ -7,23 +7,19 @@ export const DatasetTypeInfo = ({ datasetId }) => {
   const { data, isLoading } = useDatasetTypes(datasetId);
   const coldef = [
     {
-      label: "Column",
+      headerName: "Column",
       field: "column",
       flex: 3,
     },
     {
-      label: "Type",
+      headerName: "Type",
       field: "type",
       flex: 2,
     },
   ];
 
-  const rowDef = data
-    ? Object.keys(data).map((key) => ({
-        column: key,
-        type: data[key],
-      }))
-    : [];
+  const rowDef =
+    data?.map(([column, type]) => ({ column, type, id: column })) ?? [];
 
   return (
     <DataGrid

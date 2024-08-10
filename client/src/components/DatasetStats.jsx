@@ -1,6 +1,7 @@
 import { useDatasetStat } from "api/query";
 import { useEffect, useMemo, useState } from "react";
 import { DataGrid } from "./DataGrid";
+import { camelCaseToTitleCase } from "utils/strings";
 
 const transposeObject = (data) => {
   if (!data) return [];
@@ -46,13 +47,13 @@ export const DatasetStats = ({ datasetId }) => {
   const coldef = transposed
     ? [
         {
-          label: "Column",
+          headerName: "Column",
           field: "column",
           flex: 3,
           fixed: true,
         },
         ...headers.map((key) => ({
-          label: key,
+          headerName: camelCaseToTitleCase(key),
           field: key,
           flex: 1,
           renderCell: (params) => {
