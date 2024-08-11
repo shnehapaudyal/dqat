@@ -1,9 +1,9 @@
-import { Card, Grid, Typography } from "@mui/material";
+import { Card, Grid, Skeleton, Typography } from "@mui/material";
 import { useDatasetRating } from "api/query";
 import { DatasetGauge, DatasetMetricsList } from "components";
 
 export const DatasetMetricsPage = ({ datasetId }) => {
-  const { data } = useDatasetRating(datasetId);
+  const { data, isLoading } = useDatasetRating(datasetId);
 
   return (
     <Grid container rowGap={2}>
@@ -21,9 +21,13 @@ export const DatasetMetricsPage = ({ datasetId }) => {
             <Grid item flexGrow>
               <Grid item container flexShrink direction="column">
                 <Grid item>
-                  <Typography variant="h2">
-                    {+data?.rating.toFixed(2) ?? ""}
-                  </Typography>
+                  {isLoading ? (
+                    <Skeleton variant="text" width={120} height={72} />
+                  ) : (
+                    <Typography variant="h2">
+                      {+data?.rating.toFixed(2) ?? ""}
+                    </Typography>
+                  )}
                 </Grid>
                 <Grid item>
                   <Typography variant="h3">Overall Score</Typography>

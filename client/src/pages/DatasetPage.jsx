@@ -1,6 +1,14 @@
 import { mdiTableLarge } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Card, Grid, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Grid,
+  Skeleton,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import { useDataset } from "api/query";
 import { CustomTabPanel } from "components/TabPanel";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -15,7 +23,7 @@ export const DatasetPage = () => {
   const { id } = useParams("id");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data: dataset } = useDataset(id);
+  const { data: dataset, isLoading } = useDataset(id);
 
   const selectedTab = searchParams.get("tab");
 
@@ -36,17 +44,31 @@ export const DatasetPage = () => {
         <Card sx={{ padding: 2 }} variant="outlined">
           <Grid container columnGap={2} alignItems="center">
             <Grid item flexShrink={1}>
-              <Icon path={mdiTableLarge} size={1} />
+              <Box sx={{ paddingTop: 1 }}>
+                {isLoading ? (
+                  <Skeleton variant="rounded" height={24} width={24} />
+                ) : (
+                  <Icon path={mdiTableLarge} size={1} />
+                )}
+              </Box>
             </Grid>
             <Grid item xs={11}>
-              <Typography variant="h5">{dataset?.filename}</Typography>
+              {isLoading ? (
+                <Skeleton variant="text" height={32} width={120} />
+              ) : (
+                <Typography variant="h5">{dataset?.filename}</Typography>
+              )}
             </Grid>
             <Grid item flexShrink={1}>
               <Icon size={1} />
             </Grid>
-            <Typography variant="caption">
-              {`${filesize} | ${dataset?.file_type} | ${created}`}
-            </Typography>
+            {isLoading ? (
+              <Skeleton variant="text" height={20} width={120} />
+            ) : (
+              <Typography variant="caption">
+                {`${filesize} | ${dataset?.file_type} | ${created}`}
+              </Typography>
+            )}
           </Grid>
         </Card>
       </Grid>
