@@ -16,7 +16,9 @@ export const DatasetIssues = ({ datasetId }) => {
         renderCell: ({ value }) => {
           if (Number.isNaN(value) || Number.isFinite(value)) {
             const floatValue = parseFloat(value);
-            return Number.isNaN(floatValue) ? "-" : +floatValue.toFixed(2);
+            return Number.isNaN(floatValue)
+              ? "-"
+              : `${+floatValue.toFixed(2)}%`;
           } else {
             return value;
           }

@@ -1,13 +1,42 @@
 import re
 
 
-def calculate_conformity(df, formats):
+def convert_matching_format(value, formats):
+    if not value:
+        return -1
+    try:
+        for format in formats:
+            if re.match(format, str(value)):
+                return formats.index(format), str(format)
+    except Exception as e:
+        print(f"Error occurred while converting value to format: {e}")
+    return -1
+
+
+def calculate_conformity(df, formats, type_info):
     total_values = df.size
     conforming_values = 0
-    for column in df.columns:
-        if column in formats:
-            conforming_values += df[column].apply(lambda x: bool(formats[column].match(str(x)))).sum()
-    conformity = (1 - conforming_values / total_values) * 100
+
+    df_conformity = df.map(lambda x: convert_matching_format(x, formats))
+    mode_values = df_conformity.mode().iloc[0]
+
+    data_types, column_types, consistency_values = type_info
+
+    value_conformity = df_conformity == mode_values
+    type_conformity = data_types == data_types.mode().iloc[0]
+    conforming_values = value_conformity & type_conformity
+    # def does_conform(column, value):
+    #     return mode_values[column] == value
+    #
+    # conformity = 0
+    # for column in df.columns:
+    #     try:
+    #         column_conformity = df_conformity[column].map(lambda x: 1 if does_conform(column, x) else 0).sum()
+    #     except Exception as e:
+    #         column_conformity = 0
+    #     conformity = conformity + column_conformity
+
+    conformity = (conforming_values.sum().sum() / total_values) * 100
     return conformity
 
 
@@ -66,3 +95,20 @@ def inconsistent_format(df):
 
     return result
 
+
+def invalid_formats(df, formats, type_info):
+    df_conformity = df.map(lambda x: convert_matching_format(x, formats))
+    mode_values = df_conformity.mode().iloc[0]
+
+    data_types, column_types, consistency_values = type_info
+
+    value_conformity = df_conformity == mode_values
+    type_conformity = data_types == data_types.mode().iloc[0]
+    conforming_values = value_conformity & type_conformity
+
+    conformity = {}
+    for column in df.columns:
+        total_values = df[column].size
+        conformity[column] = (1 - conforming_values[column].sum() / total_values) * 100
+
+    return conformity

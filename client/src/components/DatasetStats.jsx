@@ -56,9 +56,10 @@ export const DatasetStats = ({ datasetId }) => {
           headerName: camelCaseToTitleCase(key),
           field: key,
           flex: 1,
-          renderCell: (params) => {
-            const floatValue = parseFloat(params.value);
-            return Number.isNaN(floatValue) ? "-" : +floatValue.toFixed(2);
+          renderCell: ({ value }) => {
+            if (!value || Number.isNaN(value)) return "-";
+            if (Number.isFinite(value)) return +parseFloat(value).toFixed(2);
+            return value;
           },
         })),
       ]

@@ -18,8 +18,7 @@ export const DatasetTypeInfo = ({ datasetId }) => {
     },
   ];
 
-  const rowDef =
-    data?.map(([column, type]) => ({ column, type, id: column })) ?? [];
+  const rowDef = data?.map((d) => ({ ...d, id: d.column })) ?? [];
 
   return (
     <DataGrid

@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from domain import types
 
 
 # Sample DataFrame
@@ -61,19 +62,32 @@ def convert_column_types(df):
     return df
 
 
-def calculate_consistency(df):
+def calculate_consistency(df, type_info):
     total_values = df.size
 
-    # Apply the conversion function
-    data_frame_copy = convert_column_types(df.copy())
+    data_types, column_types, consistency_values = type_info
 
-    # count all None values in data_frame_copy as inconstient_values
-    inconsistent_values = data_frame_copy.isna().sum().sum()
+    # Count the number of False values in consistency_values
+    consistent_values = consistency_values.sum().sum()
 
-    df_consistency = (1 - inconsistent_values / total_values) * 100
-    # print(f"\nConsistent: {consistent_values}, total: {total_values}")
+    df_consistency = (consistent_values / total_values) * 100
+    return df_consistency
+
+
+def inconsistency(df, type_info):
+    data_types, column_types, consistency_values = type_info
+
+    # Count the number of False values in consistency_values
+    consistent_values = consistency_values.sum()
+
+    df_consistency = {}
+    for column in df.columns:
+        total_values = df[column].size
+        df_consistency[column] = (1 - consistent_values[column] / total_values) * 100
+
     return df_consistency
 
 
 if __name__ == '__main__':
-    print(calculate_consistency(sample_dataframe()))
+    dataframe = sample_dataframe()
+    print(calculate_consistency(dataframe, types.get_column_types(dataframe)))

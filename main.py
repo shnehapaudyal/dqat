@@ -97,13 +97,6 @@ def get_dataset_rating(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/data', methods=['GET'])
 def get_dataset_data(dataset_id):
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 10))
-
-    # Calculate start and end indices for pagination
-    start_index = (page - 1) * per_page
-    end_index = start_index + per_page
-
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
     # df = convert_column_types(df)
@@ -134,7 +127,7 @@ def get_datatypes(dataset_id):
     if datatype is None:
         return {"error": "Datatype not found"}, 404
 
-    return datatype, 200
+    return datatype.to_dict(orient='records'), 200
 
 
 @app.route('/issues', methods=['GET'])
@@ -145,7 +138,7 @@ def get_issues_list():
         'outliers',
         'typo',
         'invalid_format',
-        'duplicate',
+        # 'duplicate',
     ]
 
 
@@ -191,7 +184,7 @@ def get_typos(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/issues/invalid_format', methods=['GET'])
 def get_formats(dataset_id):
-    formats = (datasets.get_formats(dataset_id))
+    formats = (datasets.get_invalid_formats(dataset_id))
     if not formats:
         return {"error": "Formats not found"}, 404
 

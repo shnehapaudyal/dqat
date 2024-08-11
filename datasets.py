@@ -3,14 +3,14 @@ from flask import jsonify
 
 import db
 import definemetrics
-from domain import outlier, types, completeness, readability
+from domain import outlier, types, completeness, readability, conformity, consistency
 from files import files
 
 
 def get_datatypes(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return types.get_column_types(df)
+    return types.get_column_types(df)[1]
 
 
 def get_statistics(dataset_id):
@@ -28,7 +28,8 @@ def get_missingvalue(dataset_id):
 def get_inconsistent_datatype(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return definemetrics.inconsistent_datatype(df)
+    type_info = types.get_column_types(df)
+    return consistency.inconsistency(df, type_info)
 
 
 def get_outlier(dataset_id):
@@ -40,13 +41,15 @@ def get_outlier(dataset_id):
 def get_typos(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return readability.typos(df)
+    type_info = types.get_column_types(df)
+    return readability.typos(df, type_info)
 
 
-def get_formats(dataset_id):
+def get_invalid_formats(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
-    return definemetrics.calculate_format_validation(df)
+    type_info = types.get_column_types(df)
+    return conformity.invalid_formats(df, types.supported_patterns, type_info)
 
 
 def get_duplicate(dataset_id):

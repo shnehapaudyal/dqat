@@ -7,9 +7,9 @@ formats = {"date1": r"\d{4}-\d{2}-\d{2}",
            "email": r"[^@]+@[^@]+\.[^@]+",
            "zip_code": r"\b\d{5}\b",
            "credit_card": r"\b\d{4}-?\d{4}-?\d{4}-?\d{4}\b",
-           "url": r"https?://[^\s]+",
+           "url": r"[a-z]*+://[^\s]+",
            "uk_postal_code": r"^[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$",
-           "canadian_postal_code": r"^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$"
+           "canadian_postal_code": r"^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$",
            }  # Define your formats
 current_date = pd.Timestamp.now()
 last_modification_date = pd.Timestamp("2023-06-01")

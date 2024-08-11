@@ -7,56 +7,98 @@ import uuid
 
 import pandas as pd
 
+integer_patterns = [
+    r'^-?\d+$'
+]
+
+float_patterns = [
+    r'^-?\d*\.\d+$|^-?\d+(\.\d+)?[eE][-+]?\d+$'
+]
+
+uuid_patterns = [
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+]
+
+json_patterns = [
+    r'^[^{]+}$'
+]
+
 # Extended patterns for dates, times, and datetimes
 date_patterns = [
-    r'^\d{4}[-/]\d{2}[-/]\d{2}$',  # YYYY-MM-DD or YYYY/MM/DD
-    r'^\d{2}[-/]\d{2}[-/]\d{4}$',  # MM-DD-YYYY or DD-MM-YYYY
-    r'^\d{2}[-/]\d{2}[-/]\d{2}$',  # MM-DD-YY or DD-MM-YY
+    r'^\d{4}[-/]\d{1,2}[-/]\d{1,2}$',  # YYYY-MM-DD or YYYY/MM/DD
+    r'^\d{1,2}[-/]\d{1,2}[-/]\d{4}$',  # MM-DD-YYYY or DD-MM-YYYY
+    r'^\d{1,2}[-/]\d{1,2}[-/]\d{2}$',  # MM-DD-YY or DD-MM-YY
     r'^\d{1,2}-[A-Za-z]{3}-\d{4}$'  # DD-MMM-YYYY (e.g., 10-Aug-2023)
 ]
 
 time_patterns = [
-    r'^\d{2}:\d{2}(:\d{2})?$',  # HH:MM or HH:MM:SS
-    r'^\d{1,2}:\d{2}\s?[APap][Mm]$',  # HH:MM AM/PM (e.g., 3:30 PM)
-    r'^\d{2}:\d{2}:\d{2}\.\d{3}$',  # HH:MM:SS.sss (e.g., 15:30:45.123)
-    r'^\d{1,2}:\d{2}:\d{2}$'  # H:MM:SS (e.g., 3:30:15)
+    r'^\d{1,2}:\d{1,2}(:\d{1,2})?$',  # HH:MM or HH:MM:SS
+    r'^\d{1,2}:\d{1,2}\s?[APap][Mm]$',  # HH:MM AM/PM (e.g., 3:30 PM)
+    r'^\d{1,2}:\d{1,2}:\d{2}\.\d{3}$',  # HH:MM:SS.sss (e.g., 15:30:45.123)
+    r'^\d{1,2}:\d{1,2}:\d{2}$'  # H:MM:SS (e.g., 3:30:15)
 ]
 
 datetime_patterns = [
-    r'^\d{4}[-/]\d{2}[-/]\d{2}[ T]\d{2}:\d{2}(:\d{2})?$',  # YYYY-MM-DD HH:MM:SS or YYYY/MM/DD HH:MM
-    r'^\d{2}[-/]\d{2}[-/]\d{4}[ T]\d{2}:\d{2}$',  # MM-DD-YYYY HH:MM or DD-MM-YYYY HH:MM
-    r'^\d{1,2}-[A-Za-z]{3}-\d{4}\s+\d{2}:\d{2}:\d{2}$',  # DD-MMM-YYYY HH:MM:SS (e.g., 10-Aug-2023 03:30:15)
-    r'^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}\s?[APap][Mm]$'
+    r'^\d{4}[-/]\d{1,2}[-/]\d{1,2}[ T]\d{1,2}:\d{1,2}(:\d{1,2})?$',  # YYYY-MM-DD HH:MM:SS or YYYY/MM/DD HH:MM
+    r'^\d{1,2}[-/]\d{,12}[-/]\d{4}[ T]\d{1,2}:\d{1,2}$',  # MM-DD-YYYY HH:MM or DD-MM-YYYY HH:MM
+    r'^\d{1,2}-[A-Za-z]{3}-\d{4}\s+\d{1,2}:\d{1,2}:\d{1,2}$',  # DD-MMM-YYYY HH:MM:SS (e.g., 10-Aug-2023 03:30:15)
+    r'^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{1,2}\s?[APap][Mm]$'
     # MMM DD, YYYY HH:MM AM/PM (e.g., Aug 10, 2023 3:30 PM)
 ]
+
+email_patterns = [
+    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+]
+
+credid_card_patterns = [
+    r'^\d{4}-?\d{4}-?\d{4}-?\d{4}$'
+]
+
+everything_patterns = [
+    r'*'
+]
+
+
+
+supported_patterns = []
+supported_patterns.extend(integer_patterns)
+supported_patterns.extend(float_patterns)
+supported_patterns.extend(uuid_patterns)
+supported_patterns.extend(json_patterns)
+supported_patterns.extend(date_patterns)
+supported_patterns.extend(time_patterns)
+supported_patterns.extend(datetime_patterns)
+supported_patterns.extend(email_patterns)
+supported_patterns.extend(credid_card_patterns)
+# supported_patterns.extend(everything_patterns)
 
 
 # Function to classify the type of each value
 def classify_value(value):
+    if value is None:
+        return 'null'
+
     try:
         cleaned_value = str(value).replace(',', '')
 
         # Check for integer
-        if re.match(r'^-?\d+$', cleaned_value):
-            return 'integer'
+        for pattern in integer_patterns:
+            if re.match(pattern, cleaned_value):
+                return 'integer'
 
         # Check for float
-        if re.match(r'^-?\d*\.\d+$|^-?\d+(\.\d+)?[eE][-+]?\d+$', cleaned_value):
-            return 'float'
+        for pattern in float_patterns:
+            if re.match(pattern, cleaned_value):
+                return 'float'
 
         # Check for UUID
-        try:
-            uuid_obj = uuid.UUID(value, version=4)
-            return 'uuid'
-        except ValueError:
-            pass
+        for pattern in uuid_patterns:
+            if re.match(pattern, value):
+                return 'uuid'
 
-        # Check for JSON
-        try:
-            json_obj = json.loads(value)
-            return 'json'
-        except ValueError:
-            pass
+        for pattern in json_patterns:
+            if re.match(pattern, value):
+                return 'object'
 
         # Check for datetime
         for pattern in datetime_patterns:
@@ -75,7 +117,7 @@ def classify_value(value):
 
         # If no matches, consider it a string
         return 'string'
-    except Exception as e:
+    except Exception:
         return 'unknown'
 
 
@@ -109,12 +151,25 @@ def aggregate_column_types(classified_df):
         most_frequent_value = value_counts.index[0]
         # Append the column name, most frequent value, and its type to the list
 
-        column_info.append((column, most_frequent_value))
+        column_info.append({'column': column, 'type': most_frequent_value})
 
     # Create a new DataFrame from the column information
-    return column_info
+    return pd.DataFrame(column_info)
+
+
+def get_consistency_values(classified_df):
+    boolean_df = pd.DataFrame(index=classified_df.index, columns=classified_df.columns)
+
+    for column in classified_df.columns:
+        # Find the most frequent value in the column
+        most_frequent_value = classified_df[column].mode()[0]
+
+        # Set True if the value matches the most frequent value
+        boolean_df[column] = classified_df[column] == most_frequent_value
+
+    return boolean_df
 
 
 def get_column_types(df):
     classified_df = df.apply(detect_and_reclassify_enums)
-    return aggregate_column_types(classified_df)
+    return classified_df, aggregate_column_types(classified_df), get_consistency_values(classified_df)

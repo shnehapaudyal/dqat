@@ -1,15 +1,9 @@
-import nltk
-from nltk.corpus import wordnet
+from spellchecker import SpellChecker
+import contractions
 
 from domain.consistency import is_numeric
 
-nltk.download('words')
-nltk.download('punkt')
-from nltk_utils import download_nltk
-from nltk import corpus, tokenize
-
-# Load English words from NLTK
-# english_words = {eng.lower() for eng in set(corpus.words.words('en'))}
+spell = SpellChecker()
 
 
 def is_text(value):
@@ -18,28 +12,40 @@ def is_text(value):
 
 def is_correctly_spelled(value):
     if isinstance(value, str):
-        tokens = tokenize.word_tokenize(value)
-        return all(wordnet.synsets(token) for token in tokens)
+        return len(spell.unknown(spell.split_words(contractions.fix(value)))) == 0
     return True
 
 
-def calculate_readability(df):
+def calculate_readability(df, type_info):
     # Helper function to check if a value is correctly spelled
-    total_values = df.size
-    df_map = df.map(lambda x: not is_text(x) or is_correctly_spelled(x))
-    df.to_dict()
+    data_types, column_types, consistency_values = type_info
+
+    columns = column_types[column_types['type'] == 'string']['column']
+    if len(columns) == 0:
+        return 100
+
+    df_filtered = df[columns]
+    total_values = df_filtered.size
+
+    df_map = df_filtered.map(lambda x: is_correctly_spelled(x))
     correctly_spelled_values = df_map.sum().sum()
     readability = (correctly_spelled_values / total_values) * 100
     return readability
 
 
-def typos(df):
+def typos(df, type_info):
     # Function to calculate readability scores, counts, and typo percentages
     typo_percentages = {}
 
-    for column in df.columns:
-        correctly_spelled = df[column].map(lambda x: not is_text(x) or is_correctly_spelled(x)).sum()
+    data_types, column_types, consistency_values = type_info
+    columns = column_types[column_types['type'] == 'string']['column']
+
+    def typo(column):
+        correctly_spelled = df[column].map(lambda x: is_correctly_spelled(x)).sum()
         total_count = len(df[column])
-        typo_percentages[column] = ((total_count - correctly_spelled) / total_count) * 100
+        return ((total_count - correctly_spelled) / total_count) * 100
+
+    for column in df.columns:
+        typo_percentages[column] = typo(column) if column in columns.values else 0
 
     return typo_percentages
