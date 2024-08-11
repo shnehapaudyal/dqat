@@ -14,7 +14,7 @@ export const useUploadDataset = () => {
   } = useMutation(api.uploadDataset, {
     onSuccess: () => {
       // Invalidate the 'datasets' query key after successful upload
-      client.invalidateQueries(["datasets"]);
+      client.invalidateQueries(["datasets"], { refetchActive: true, refetchInactive: true });
     },
   });
 

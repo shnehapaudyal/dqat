@@ -13,8 +13,6 @@ import { grey } from "@mui/material/colors";
 import Dropzone from "react-dropzone";
 import { getFileSize } from "utils/files";
 
-import { get, set } from "https://unpkg.com/idb-keyval@5.0.2/dist/esm/index.js";
-
 export const FileUploadUI = () => {
   const [selectedFile, setSelectedFile] = React.useState();
 

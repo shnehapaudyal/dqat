@@ -71,7 +71,7 @@ export const DatasetStats = ({ datasetId }) => {
   return (
     <DataGrid
       loading={isLoading}
-      title="Dataset Stats"
+      title="Dataset Statistics"
       density="compact"
       columns={coldef}
       rows={rowDef}
