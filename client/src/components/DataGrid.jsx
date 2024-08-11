@@ -1,12 +1,7 @@
 import { Card, Divider, Grid, Typography } from "@mui/material";
 import { DataGrid as MUIDataGrid } from "@mui/x-data-grid";
-import { useEffect } from "react";
-export const DataGrid = ({ title, itemsPerPage = 50, ...props }) => {
-  useEffect(
-    () => console.log("DataGrid", title, { loading: props?.loading }),
-    [props?.loading, title],
-  );
 
+export const DataGrid = ({ title, loading, itemsPerPage = 50, ...props }) => {
   itemsPerPage = props?.rows?.length
     ? Math.min(props?.rows?.length, itemsPerPage)
     : itemsPerPage;
@@ -14,6 +9,7 @@ export const DataGrid = ({ title, itemsPerPage = 50, ...props }) => {
   const grid = (
     <MUIDataGrid
       {...props}
+      loading={loading}
       {...(itemsPerPage && {
         pageSizeOptions: [itemsPerPage],
         initialState: {

@@ -1,23 +1,12 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useDatasetData } from "api/query";
 import { DatasetTypeInfo } from "components";
 import { DataGrid } from "components/DataGrid";
 import { DatasetStats } from "components/DatasetStats";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 export const DatasetDataPage = ({ datasetId }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const pageSize = 25;
-
-  const { data, isLoading } = useDatasetData(datasetId, currentPage, pageSize);
-
-  useEffect(() => {
-    console.log(
-      "DatasetDataPage",
-      data?.find((dataset) => dataset.Year === 2023),
-    );
-  }, [data]);
+  const { data, isLoading } = useDatasetData(datasetId);
 
   const columns = useMemo(() => {
     const headers = data?.length ? Object.keys(data[0]) : [];
@@ -66,9 +55,6 @@ export const DatasetDataPage = ({ datasetId }) => {
           rowBufferPx={100}
           sx={{ minHeight: "500px" }}
           row
-          pageSizeOptions={[pageSize]}
-          paginationModel={{ page: currentPage, pageSize }}
-          onPaginationModelChange={({ page }) => setCurrentPage(page)}
         />
       </Grid>
     </Grid>

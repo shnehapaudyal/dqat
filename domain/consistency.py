@@ -75,7 +75,7 @@ def calculate_consistency(df, type_info):
 
 
 def inconsistency(df, type_info):
-    data_types, column_types, consistency_values = type_info
+    consistency_values = type_info[2]
 
     # Count the number of False values in consistency_values
     consistent_values = consistency_values.sum()
@@ -90,4 +90,4 @@ def inconsistency(df, type_info):
 
 if __name__ == '__main__':
     dataframe = sample_dataframe()
-    print(calculate_consistency(dataframe, types.get_column_types(dataframe)))
+    print(calculate_consistency(dataframe, types.get_type_info(dataframe)))

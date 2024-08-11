@@ -57,7 +57,8 @@ export const DatasetStats = ({ datasetId }) => {
           field: key,
           flex: 1,
           renderCell: ({ value }) => {
-            if (!value || Number.isNaN(value)) return "-";
+            if (value === undefined || value === null || Number.isNaN(value))
+              return "-";
             if (Number.isFinite(value)) return +parseFloat(value).toFixed(2);
             return value;
           },

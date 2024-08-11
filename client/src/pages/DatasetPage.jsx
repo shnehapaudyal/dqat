@@ -59,11 +59,8 @@ export const DatasetPage = () => {
                 <Typography variant="h5">{dataset?.filename}</Typography>
               )}
             </Grid>
-            <Grid item flexShrink={1}>
-              <Icon size={1} />
-            </Grid>
             {isLoading ? (
-              <Skeleton variant="text" height={20} width={120} />
+              <Skeleton variant="text" height={20} width={240} />
             ) : (
               <Typography variant="caption">
                 {`${filesize} | ${dataset?.file_type} | ${created}`}

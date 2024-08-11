@@ -39,9 +39,9 @@ export const useDatasetMetrics = (datasetId) =>
     api.getDatasetMetrics(datasetId),
   );
 
-export const useDatasetData = (datasetId, page, pageSize) =>
+export const useDatasetData = (datasetId) =>
   useApi(["dataset", datasetId, "data"], () =>
-    api.getDatasetData(datasetId, page, pageSize),
+    api.getDatasetData(datasetId),
   );
 
 export const useDatasetTypes = (datasetId) =>

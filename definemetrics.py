@@ -27,10 +27,6 @@ def get_data():
 # till here Checked
 
 
-
-
-
-
 # Dataset Information
 def datatypes(df):
     df = df.copy()
@@ -38,7 +34,20 @@ def datatypes(df):
     return {k: str(dtypes_dict[k]) for k in dtypes_dict.keys()}
 
 
-def statistics(df):
+def statistics(df, type_info):
+    column_types = type_info[1].to_dict(orient='list')
+
+    def try_float(value):
+        try:
+            return float(value)
+        except ValueError:
+            return np.nan
+
+    for column in df.columns:
+        df[column] = df[column].map(
+            lambda x: try_float(x) if column_types['type'][column_types['column'].index(column)] in ['float',
+                                                                                                     'integer'] else x)
+
     return df.describe(include='all').to_json()
 
 
@@ -64,7 +73,6 @@ def inconsistent_datatype(df):
 
     return column_inconsistency
 
-
 # if __name__ == "__main__":
 #     # Example usage
 #     df = get_data()
@@ -87,42 +95,42 @@ def inconsistent_datatype(df):
 #                "canadian_postal_code": r"^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$"
 #                }
 
-    # current_date = pd.Timestamp.now()
-    # last_modification_date = pd.Timestamp("2023-06-01")
-    # creation_date = pd.Timestamp("2022-01-01")
-    # access_count = 150
-    # total_access_count = 200
-    # policy = True
-    # protocols = True
-    # threat_detection = True
-    # encryption = True
-    # documentation = True
-    # original_df = df.copy()
-    # processed_df = df.copy()  # Assume some preprocessing has been done
-    #
-    # completeness = calculate_completeness(df)
-    # uniqueness = calculate_uniqueness(df)
-    # consistency = calculate_consistency(df)
-    # conformity = calculate_conformity(df, formats)
-    # timeliness = calculate_timeliness(df, current_date, last_modification_date, creation_date)
-    # volatility = calculate_volatility(current_date, creation_date, last_modification_date)
-    # readability = calculate_readability(df)
-    # ease_of_manipulation = calculate_ease_of_manipulation(df)
-    # relevancy = calculate_relevancy(access_count, total_access_count)
-    # security = calculate_security(policy, protocols, threat_detection, encryption, documentation)
-    # accessibility = calculate_accessibility(df)
-    # integrity = calculate_integrity(df)
-    #
-    # print(f"Completeness: {completeness}%")
-    # print(f"Uniqueness: {uniqueness}%")
-    # print(f"Consistency: {consistency}%")
-    # print(f"Conformity: {conformity}%")
-    # print(f"Timeliness: {timeliness}%")
-    # print(f"Volatility: {volatility}%")
-    # print(f"Readability: {readability}%")
-    # print(f"Ease of Manipulation: {ease_of_manipulation}%")
-    # print(f"Relevancy: {relevancy}%")
-    # print(f"Security: {security}%")
-    # print(f"Accessibility: {accessibility}%")
-    # print(f"Integrity: {integrity}%")
-    # # print(f"Score
+# current_date = pd.Timestamp.now()
+# last_modification_date = pd.Timestamp("2023-06-01")
+# creation_date = pd.Timestamp("2022-01-01")
+# access_count = 150
+# total_access_count = 200
+# policy = True
+# protocols = True
+# threat_detection = True
+# encryption = True
+# documentation = True
+# original_df = df.copy()
+# processed_df = df.copy()  # Assume some preprocessing has been done
+#
+# completeness = calculate_completeness(df)
+# uniqueness = calculate_uniqueness(df)
+# consistency = calculate_consistency(df)
+# conformity = calculate_conformity(df, formats)
+# timeliness = calculate_timeliness(df, current_date, last_modification_date, creation_date)
+# volatility = calculate_volatility(current_date, creation_date, last_modification_date)
+# readability = calculate_readability(df)
+# ease_of_manipulation = calculate_ease_of_manipulation(df)
+# relevancy = calculate_relevancy(access_count, total_access_count)
+# security = calculate_security(policy, protocols, threat_detection, encryption, documentation)
+# accessibility = calculate_accessibility(df)
+# integrity = calculate_integrity(df)
+#
+# print(f"Completeness: {completeness}%")
+# print(f"Uniqueness: {uniqueness}%")
+# print(f"Consistency: {consistency}%")
+# print(f"Conformity: {conformity}%")
+# print(f"Timeliness: {timeliness}%")
+# print(f"Volatility: {volatility}%")
+# print(f"Readability: {readability}%")
+# print(f"Ease of Manipulation: {ease_of_manipulation}%")
+# print(f"Relevancy: {relevancy}%")
+# print(f"Security: {security}%")
+# print(f"Accessibility: {accessibility}%")
+# print(f"Integrity: {integrity}%")
+# # print(f"Score

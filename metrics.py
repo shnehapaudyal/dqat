@@ -18,7 +18,7 @@ def get_dataset_metrics(dataset_id):
     dataset_path = db.read_dataset(dataset_id).path
     df = files.read(dataset_path)
 
-    type_info = domain.types.get_column_types(df)
+    type_info = domain.types.get_type_info(df)
 
     completeness = calculate_completeness(df)
     uniqueness = calculate_uniqueness(df)

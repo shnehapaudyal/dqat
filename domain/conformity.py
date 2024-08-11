@@ -100,7 +100,7 @@ def invalid_formats(df, formats, type_info):
     df_conformity = df.map(lambda x: convert_matching_format(x, formats))
     mode_values = df_conformity.mode().iloc[0]
 
-    data_types, column_types, consistency_values = type_info
+    data_types = type_info[0]
 
     value_conformity = df_conformity == mode_values
     type_conformity = data_types == data_types.mode().iloc[0]

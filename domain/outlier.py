@@ -1,6 +1,10 @@
+import re
+from datetime import datetime
+
 import pandas as pd
 import numpy as np
 
+import domain.types
 from domain.consistency import is_numeric
 
 
@@ -48,31 +52,77 @@ def convert_column_types(df):
     return df
 
 
-def outliers(df):
-    # Function to convert columns to the appropriate data type
-    data_frame = convert_column_types(df.copy())
-
-    def detect_outliers_std(data_frame, column):
-        mean = data_frame[column].mean()
-        std = data_frame[column].std()
+def detect_outliers(column):
+    def detect_outliers_std(column):
+        mean = column.mean()
+        std = column.std()
         threshold = 3  # Typically 3 standard deviations
-        outliers = data_frame[
-            (data_frame[column] > mean + threshold * std) | (data_frame[column] < mean - threshold * std)]
-        return outliers
+        try:
+            return (column > mean + threshold * std) | (column < mean - threshold * std)
+        except Exception as e:
+            print(f"Error occurred while detecting outliers: {e}")
+            return column.apply(lambda x: False)
+
+    outliers_std = detect_outliers_std(column).sum()
+    outlier_percentage = outliers_std / len(column) * 100
+    return outlier_percentage
+
+
+def detect_numeric_outliers(df, column):
+    def clean_value(value):
+        return value if isinstance(value, (int, float)) else value.replace(',', '') if value is not None else ''
+
+    return detect_outliers(pd.to_numeric(df[column].map(clean_value), errors='coerce'))
+
+
+def detect_datetime_outliers(df, column):
+    supported_formats = []
+    supported_formats.extend(domain.types.date_patterns)
+    supported_formats.extend(domain.types.time_patterns)
+    supported_formats.extend(domain.types.datetime_patterns)
+
+    def map_datetime(value):
+        if not value:
+            return 0
+
+        for pattern in domain.types.datetime_patterns:
+            try:
+                if re.match(pattern, str(value)):
+                    dt = datetime.strptime(value, pattern)
+                    return dt.timestamp()
+            except ValueError:
+                continue
+        return 0
+
+    return detect_outliers(df[column].map(map_datetime))
+
+
+def detect_string_outliers(df, column):
+    return detect_outliers(df[column].fillna('').map(len))
+
+
+def outliers(df, type_info):
+    # Function to convert columns to the appropriate data type
+
+    column_types: pd.DataFrame = type_info[1]
+    numeric_columns = column_types[(column_types['type'] == 'integer') | (column_types['type'] == 'float')][
+        'column'].values
+    datetime_columns = column_types[
+        (column_types['type'] == 'date') | (column_types['type'] == 'time') | (column_types['type'] == 'datetime')][
+        'column'].values
+    string_columns = column_types[(column_types['type'] == 'string') | (column_types['type'] == 'enum')][
+        'column'].values
 
     # Loop through each column in the dataframe
     outlier_percentages = {}  # Initialize a dictionary to store outlier percentages
-    for column in data_frame.columns:
-        if data_frame[column].dtype in [np.float64, np.int64]:
-            # print(f"\nColumn: {column}")
-
-            # Detect outliers using Standard Deviation Method
-            outliers_std = detect_outliers_std(data_frame, column)
-
-            outlier_percentage = len(outliers_std) / len(data_frame) * 100
-            outlier_percentages[column] = outlier_percentage
-
+    for column in df.columns:
+        if column in numeric_columns:
+            outlier_percentages[column] = detect_numeric_outliers(df, column)
+        elif column in datetime_columns:
+            outlier_percentages[column] = detect_datetime_outliers(df, column)
+        elif column in string_columns:
+            outlier_percentages[column] = detect_string_outliers(df, column)
         else:
-            # print(f"\nSkipping column {column} as it is not numerical.")
-            outlier_percentages[column] = 'Not Numeric'  # Mark non-numerical columns
+            outlier_percentages[column] = 0
+
     return outlier_percentages

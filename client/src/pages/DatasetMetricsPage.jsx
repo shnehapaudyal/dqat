@@ -30,7 +30,11 @@ export const DatasetMetricsPage = ({ datasetId }) => {
                   )}
                 </Grid>
                 <Grid item>
-                  <Typography variant="h3">Overall Score</Typography>
+                  {isLoading ? (
+                    <Skeleton variant="text" width={294} height={56} />
+                  ) : (
+                    <Typography variant="h3">Overall Score</Typography>
+                  )}
                 </Grid>
               </Grid>
             </Grid>

@@ -60,9 +60,9 @@ export const getDatasetRating = async (datasetId) => {
   return response.data;
 };
 
-export const getDatasetData = async (datasetId, page, pageSize) => {
+export const getDatasetData = async (datasetId) => {
   const response = await api.get(
-    `/dataset/${datasetId}/data?page=${page}&per_page=${pageSize}`,
+    `/dataset/${datasetId}/data`,
   );
   return response.data;
 };

@@ -170,6 +170,6 @@ def get_consistency_values(classified_df):
     return boolean_df
 
 
-def get_column_types(df):
+def get_type_info(df):
     classified_df = df.apply(detect_and_reclassify_enums)
     return classified_df, aggregate_column_types(classified_df), get_consistency_values(classified_df)
