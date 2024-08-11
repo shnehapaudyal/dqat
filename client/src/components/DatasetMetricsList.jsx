@@ -8,13 +8,12 @@ export const DatasetMetricsList = ({ datasetId }) => {
 
   // console.log(metrics, datasetId);
 
-  const rows = metrics
-    ? Object.keys(metrics).map((key) => ({
-        id: key,
-        name: snakeCaseToTitleCase(key),
-        score: metrics[key],
-      }))
-    : [];
+  const rows =
+    metrics?.map(({ name, score }) => ({
+      id: name,
+      name: snakeCaseToTitleCase(name),
+      score,
+    })) ?? [];
 
   const columns = [
     {
