@@ -15,12 +15,12 @@ def get_issues_list():
 def dataset_issues(df):
     type_info = types.get_type_info(df)
 
-    issues = {
-        'missing_values': completeness.missingvalues(df),
-        'inconsistency': consistency.inconsistency(df, type_info),
-        'outliers': outlier.outliers(df, type_info),
-        'typo': readability.typos(df, type_info),
-        'invalid_format': conformity.invalid_formats(df, types.supported_patterns, type_info),
-    }
+    issues = [
+        {'name': 'missing_values', 'value': completeness.missingvalues(df)},
+        {'name': 'inconsistency', 'value': consistency.inconsistency(df, type_info)},
+        {'name': 'outliers', 'value': outlier.outliers(df, type_info)},
+        {'name': 'typo', 'value': readability.typos(df, type_info)},
+        {'name': 'invalid_format', 'value': conformity.invalid_formats(df, types.supported_patterns, type_info)},
+    ]
 
     return issues

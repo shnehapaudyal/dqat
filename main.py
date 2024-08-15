@@ -201,6 +201,9 @@ def get_formats(dataset_id):
     return formats, 200
 
 
+issues
+
+
 @app.route('/dataset/<string:dataset_id>/issues/duplicate', methods=['GET'])
 def get_duplicate(dataset_id):
     df = dataframe(dataset_id)
