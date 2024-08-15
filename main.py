@@ -1,7 +1,6 @@
 import logging
 import uuid
 
-import pandas as pd
 from flask_wtf import FlaskForm
 from wtforms import FileField, SubmitField
 from werkzeug.utils import secure_filename
@@ -9,6 +8,7 @@ from wtforms.validators import InputRequired
 
 import datasets
 import db
+import issues
 from files import *
 import domain
 import metrics
@@ -21,7 +21,15 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
+
 download_nltk()
+
+
+def dataframe(dataset_id):
+    dataset_record = datasets.get_dataset(dataset_id)
+    return files.read(dataset_record.path)
 
 
 class UploadFileForm(FlaskForm):
@@ -70,14 +78,16 @@ def get_single_dataset_record(dataset_id):
         return {"error": "Dataset not found"}, 404
 
     result = record.json()
-    result['overall_score'] = metrics.calculate_overall_score(dataset_id)
+    df = files.read(record.path)
+    result['overall_score'] = metrics.calculate_overall_score(df)
 
     return result, 200
 
 
 @app.route('/dataset/<string:dataset_id>/metrics', methods=['GET'])
 def get_dataset_metrics(dataset_id):
-    dataset_metrics = metrics.get_dataset_metrics(dataset_id)
+    df = dataframe(dataset_id)
+    dataset_metrics = metrics.get_dataset_metrics(df)
 
     if not domain:
         return {"error": "Dataset not found"}, 404
@@ -87,7 +97,8 @@ def get_dataset_metrics(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/overall_rating', methods=['GET'])
 def get_dataset_rating(dataset_id):
-    dataset_metrics = metrics.calculate_overall_score(dataset_id)
+    df = dataframe(dataset_id)
+    dataset_metrics = metrics.calculate_overall_score(df)
 
     if not dataset_metrics:
         return {"error": "Dataset not found"}, 404
@@ -97,9 +108,7 @@ def get_dataset_rating(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/data', methods=['GET'])
 def get_dataset_data(dataset_id):
-    dataset_path = db.read_dataset(dataset_id).path
-    df = files.read(dataset_path)
-    # df = convert_column_types(df)
+    df = dataframe(dataset_id)
 
     return df.to_json(orient='records'), 200
 
@@ -112,7 +121,9 @@ def get_dataset_issues(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/stats', methods=['GET'])
 def get_statistics(dataset_id):
-    statistics = (datasets.get_statistics(dataset_id))  # Assuming definemetrics has a get_statistics function
+    df = dataframe(dataset_id)
+    types = domain.types.get_type_info(df)
+    statistics = (datasets.statistics(df))  # Assuming definemetrics has a get_statistics function
 
     if not statistics:
         return {"error": "Statistics not found"}, 404
@@ -122,7 +133,8 @@ def get_statistics(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/types', methods=['GET'])
 def get_datatypes(dataset_id):
-    datatype = (datasets.get_datatypes(dataset_id))  # Assuming definemetrics has a get_datatypes function
+    df = dataframe(dataset_id)
+    datatype = datasets.get_datatypes(df)  # Assuming definemetrics has a get_datatypes function
 
     if datatype is None:
         return {"error": "Datatype not found"}, 404
@@ -132,19 +144,13 @@ def get_datatypes(dataset_id):
 
 @app.route('/issues', methods=['GET'])
 def get_issues_list():
-    return [
-        'missing_values',
-        'inconsistency',
-        'outliers',
-        'typo',
-        'invalid_format',
-        # 'duplicate',
-    ]
+    return issues.get_issues_list()
 
 
 @app.route('/dataset/<string:dataset_id>/issues/missing_values', methods=['GET'])
 def get_missingvalue(dataset_id):
-    datatype = (datasets.get_missingvalue(dataset_id))  # Assuming definemetrics has a get_missing valuefunction
+    df = dataframe(dataset_id)
+    datatype = (metrics.get_missingvalue(df))  # Assuming definemetrics has a get_missing valuefunction
 
     if not datatype:
         return {"error": "Missing value not found"}, 404
@@ -154,7 +160,8 @@ def get_missingvalue(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/issues/inconsistency', methods=['GET'])
 def get_inconsistent_datatype(dataset_id):
-    datatype = (datasets.get_inconsistent_datatype(dataset_id))
+    df = dataframe(dataset_id)
+    datatype = (metrics.get_inconsistent_datatype(df))
 
     if not datatype:
         return {"error": "Inconsistent datatype not found"}, 404
@@ -164,7 +171,8 @@ def get_inconsistent_datatype(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/issues/outliers', methods=['GET'])
 def get_outlier(dataset_id):
-    datatype = (datasets.get_outlier(dataset_id))  # Assuming definemetrics has a get_outlier value function
+    df = dataframe(dataset_id)
+    datatype = (metrics.get_outlier(df))  # Assuming definemetrics has a get_outlier value function
 
     if not datatype:
         return {"error": "Missing value not found"}, 404
@@ -174,7 +182,8 @@ def get_outlier(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/issues/typo', methods=['GET'])
 def get_typos(dataset_id):
-    typos = (datasets.get_typos(dataset_id))  # Assuming definemetrics has a get_typos value function
+    df = dataframe(dataset_id)
+    typos = (metrics.get_typos(df))  # Assuming definemetrics has a get_typos value function
 
     if not typos:
         return {"error": "Typos not found"}, 404
@@ -184,7 +193,8 @@ def get_typos(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/issues/invalid_format', methods=['GET'])
 def get_formats(dataset_id):
-    formats = (datasets.get_invalid_formats(dataset_id))
+    df = dataframe(dataset_id)
+    formats = (metrics.get_invalid_formats(df))
     if not formats:
         return {"error": "Formats not found"}, 404
 
@@ -193,7 +203,8 @@ def get_formats(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/issues/duplicate', methods=['GET'])
 def get_duplicate(dataset_id):
-    duplicate = (datasets.get_duplicate(dataset_id))
+    df = dataframe(dataset_id)
+    duplicate = (metrics.get_duplicate(df))
 
     if not duplicate:
         return {"error": "Duplicate rows not found"}, 404
