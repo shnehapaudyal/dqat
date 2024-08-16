@@ -6,10 +6,6 @@ from domain.consistency import is_numeric
 spell = SpellChecker()
 
 
-def is_text(value):
-    return isinstance(value, str) and not is_numeric(value)
-
-
 def is_correctly_spelled(value):
     if isinstance(value, str):
         return len(spell.unknown(spell.split_words(contractions.fix(value)))) == 0

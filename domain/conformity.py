@@ -36,16 +36,6 @@ def calculate_conformity(df, formats, type_info):
     value_conformity = df_conformity == mode_values
     type_conformity = data_types == data_types.mode().iloc[0]
     conforming_values = value_conformity & type_conformity
-    # def does_conform(column, value):
-    #     return mode_values[column] == value
-    #
-    # conformity = 0
-    # for column in df.columns:
-    #     try:
-    #         column_conformity = df_conformity[column].map(lambda x: 1 if does_conform(column, x) else 0).sum()
-    #     except Exception as e:
-    #         column_conformity = 0
-    #     conformity = conformity + column_conformity
 
     conformity = (conforming_values.sum().sum() / total_values) * 100
     return conformity

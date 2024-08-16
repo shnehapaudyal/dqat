@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pandas as pd
 import numpy as np
+from pandas import Series
 
 import domain.types
 from domain.consistency import is_numeric
@@ -53,7 +54,7 @@ def convert_column_types(df):
 
 
 def detect_outliers(column):
-    def detect_outliers_std(column):
+    def detect_outliers_std(column: Series):
         mean = column.mean()
         std = column.std()
         threshold = 3  # Typically 3 standard deviations
@@ -101,6 +102,11 @@ def detect_string_outliers(df, column):
     return detect_outliers(df[column].fillna('').map(len))
 
 
+def detect_enum_outliers(df, column):
+    count = df[column].value_counts()
+    return detect_outliers(df[column].map(lambda x: count[x]))
+
+
 def outliers(df, type_info):
     # Function to convert columns to the appropriate data type
 
@@ -110,7 +116,9 @@ def outliers(df, type_info):
     datetime_columns = column_types[
         (column_types['type'] == 'date') | (column_types['type'] == 'time') | (column_types['type'] == 'datetime')][
         'column'].values
-    string_columns = column_types[(column_types['type'] == 'string') | (column_types['type'] == 'enum')][
+    string_columns = column_types[(column_types['type'] == 'string')][
+        'column'].values
+    enum_columns = column_types[(column_types['type'] == 'enum')][
         'column'].values
 
     # Loop through each column in the dataframe
@@ -122,6 +130,8 @@ def outliers(df, type_info):
             outlier_percentages[column] = detect_datetime_outliers(df, column)
         elif column in string_columns:
             outlier_percentages[column] = detect_string_outliers(df, column)
+        elif column in enum_columns:
+            outlier_percentages[column] = detect_enum_outliers(df, column)
         else:
             outlier_percentages[column] = 0
 

@@ -18,7 +18,6 @@ def sample_dataframe():
 
 
 def is_numeric(value, number_type=float):
-    """Check if a value is numeric (after removing commas)."""
     try:
         number_type(value)
         return True
