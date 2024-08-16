@@ -4,6 +4,9 @@ import pandas as pd
 import files_local
 from server import app
 
+from functools import lru_cache
+
+
 bucket_name = app.config['UPLOAD_BUCKET']
 
 
@@ -22,6 +25,7 @@ def save(file, filename):
     return size, filename
 
 
+@lru_cache
 def read(filename):
     bucket_file = f"s3://{bucket_name}/{filename}"
     print(bucket_file)

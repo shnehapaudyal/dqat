@@ -34,23 +34,6 @@ def datatypes(df):
     return {k: str(dtypes_dict[k]) for k in dtypes_dict.keys()}
 
 
-def statistics(df, type_info):
-    column_types = type_info[1].to_dict(orient='list')
-
-    def try_float(value):
-        try:
-            return float(value)
-        except ValueError:
-            return np.nan
-
-    for column in df.columns:
-        df[column] = df[column].map(
-            lambda x: try_float(x) if column_types['type'][column_types['column'].index(column)] in ['float',
-                                                                                                     'integer'] else x)
-
-    return df.describe(include='all').to_json()
-
-
 # Dataset Problems
 def inconsistent_datatype(df):
     type_mapping = {

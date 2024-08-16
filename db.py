@@ -1,4 +1,6 @@
 # Create the table in the database
+from functools import lru_cache
+
 from dbengine import Base, engine, session
 from entity.dataset import DatasetRecord
 
@@ -10,7 +12,9 @@ def create_dataset(dataset):
     session.commit()
 
 
+@lru_cache
 def read_dataset(dataset_id):
+    print('----------------------------')
     return session.query(DatasetRecord).filter_by(dataset_id=dataset_id).first()
 
 

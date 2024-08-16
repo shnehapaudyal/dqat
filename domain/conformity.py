@@ -1,5 +1,7 @@
 import re
 
+import pandas as pd
+
 
 def convert_matching_format(value, formats):
     if not value:
@@ -17,7 +19,16 @@ def calculate_conformity(df, formats, type_info):
     total_values = df.size
     conforming_values = 0
 
-    df_conformity = df.map(lambda x: convert_matching_format(x, formats))
+    column_types = type_info[1]
+    numeric_columns = column_types[(column_types['type'] == 'integer') | (column_types['type'] == 'float')][
+        'column'].values
+
+    cleaned_df = pd.DataFrame()
+    for column in df.columns:
+        cleaned_df[column] = df[column].map(
+            lambda x: x if column not in numeric_columns else str(x).replace(',', ''))
+
+    df_conformity = cleaned_df.map(lambda x: convert_matching_format(x, formats))
     mode_values = df_conformity.mode().iloc[0]
 
     data_types, column_types, consistency_values = type_info
@@ -87,7 +98,16 @@ def inconsistent_format(df):
 
 
 def invalid_formats(df, formats, type_info):
-    df_conformity = df.map(lambda x: convert_matching_format(x, formats))
+    column_types = type_info[1]
+
+    numeric_columns = column_types[(column_types['type'] == 'integer') | (column_types['type'] == 'float')][
+        'column'].values
+
+    cleaned_df = pd.DataFrame()
+    for column in df.columns:
+        cleaned_df[column] = df[column].map(
+            lambda x: x if column not in numeric_columns else str(x).replace(',', ''))
+    df_conformity = cleaned_df.map(lambda x: convert_matching_format(x, formats))
     mode_values = df_conformity.mode().iloc[0]
 
     data_types = type_info[0]
