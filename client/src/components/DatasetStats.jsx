@@ -55,7 +55,7 @@ export const DatasetStats = ({ datasetId }) => {
         ...headers.map((key) => ({
           headerName: camelCaseToTitleCase(key),
           field: key,
-          flex: 1,
+          flex: 2,
           renderCell: ({ value }) => {
             if (value === undefined || value === null || Number.isNaN(value))
               return "-";

@@ -39,7 +39,7 @@ def statistics(df):
         if is_string(column):
             rfl[column] = get_rfl(df[column])
 
-    rfl = pd.DataFrame(rfl.mode().iloc[0]).transpose().rename({0: 'FKGL_Category' })
+    rfl = pd.DataFrame(rfl.mode().iloc[0]).transpose().rename({0: 'Readability'})
     stats = df.describe(include='all')
     stats = pd.concat((stats, rfl))
     stats = stats.fillna(np.nan).replace([np.nan], [None])

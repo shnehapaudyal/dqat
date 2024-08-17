@@ -37,9 +37,14 @@ def compute_features(text_series):
     return features_df
 
 
-def get_rfl(values):
+try:
     with open('model/rfc.pkl', 'rb') as f:
         rfl_model = pickle.load(f)
+except:
+    pass
+
+
+def get_rfl(values):
     features = compute_features(values)
     try:
         predicted = rfl_model.predict(features)
