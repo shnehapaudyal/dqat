@@ -104,7 +104,14 @@ def detect_string_outliers(df, column):
 
 def detect_enum_outliers(df, column):
     count = df[column].value_counts()
-    return detect_outliers(df[column].map(lambda x: count[x]))
+
+    def count_fn(x):
+        try:
+            return count[x] if x is not None else 0
+        except KeyError as e:
+            return 0  # Return 0 for non-existent enum values or null values
+
+    return detect_outliers(df[column].map(count_fn))
 
 
 def outliers(df, type_info):
