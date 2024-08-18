@@ -1,9 +1,7 @@
 import boto3
 import pandas as pd
-
 import files_local
 from server import app
-
 from functools import lru_cache
 
 
