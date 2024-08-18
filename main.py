@@ -241,4 +241,4 @@ def get_duplicate(dataset_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=False)
+    app.run(debug=True)
