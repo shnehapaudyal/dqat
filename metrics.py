@@ -1,7 +1,14 @@
+import json
+import pickle
+
+import pandas as pd
+
 import db
+from datasets import get_datatypes
 from files import files
 from domain import diversity, ease_of_manipulation
 from domain import outlier, types, completeness, readability, conformity, consistency, uniqueness
+from rfl import get_rfl
 
 
 def get_dataset_metrics(df):
@@ -66,3 +73,36 @@ def get_duplicate(df):
     # duplicates_info = {key: float(value) if isinstance(value, (int, float)) else value for key, value in
     #                    duplicates_info.items()}
     # return jsonify(duplicates_info)
+
+
+try:
+    with open('model/estimator.pkl', 'rb') as file:
+        metrics_estimator = pickle.load(file)
+except Exception as e:
+    print('Error', e)
+
+
+def get_metrics_estimate(df):
+    predicted_scores = metrics_estimator.predict(df.columns)
+    for metric in predicted_scores:
+        predicted_scores[metric] = float(predicted_scores[metric])
+    return predicted_scores
+
+
+def get_readability(df):
+    rfl = pd.DataFrame()
+    column_types = get_datatypes(df).to_dict(orient='list')
+
+    def is_string(column):
+        return column_types['type'][column_types['column'].index(column)] == 'string'
+
+    for column in df.columns:
+        if is_string(column):
+            rfl[column] = get_rfl(df[column])
+
+    if rfl.size > 0:
+        rfl = rfl.mode()
+        return rfl.to_dict(orient='records')[0]
+    else:
+        return {}
+

@@ -7,9 +7,6 @@ import db
 from domain import types
 import pickle
 
-from rfl import get_rfl
-
-
 def get_dataset(dataset_id):
     return db.read_dataset(dataset_id)
 
@@ -30,17 +27,22 @@ def statistics(df):
     def is_numeric(column):
         return column_types['type'][column_types['column'].index(column)] in ['float', 'integer']
 
-    def is_string(column):
-        return column_types['type'][column_types['column'].index(column)] == 'string'
+    stats = df.describe(include='all')
 
-    rfl = pd.DataFrame()
     for column in df.columns:
         df[column] = df[column].map(lambda x: try_float(x) if is_numeric(column) else x)
-        if is_string(column):
-            rfl[column] = get_rfl(df[column])
 
-    rfl = pd.DataFrame(rfl.mode().iloc[0]).transpose().rename({0: 'Readability'})
-    stats = df.describe(include='all')
-    stats = pd.concat((stats, rfl))
     stats = stats.fillna(np.nan).replace([np.nan], [None])
     return stats.to_json()
+
+
+
+try:
+    with open('model/classifier.pkl', 'rb') as file:
+        tags_classifier = pickle.load(file)
+except Exception as e:
+    print('Error', e)
+
+
+def get_tags(df):
+    return list(tags_classifier.predict(df.columns))

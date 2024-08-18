@@ -18,6 +18,7 @@ import { DatasetDataPage } from "./DatasetDataPage";
 import { useEffect, useRef } from "react";
 import { DatasetIssuesPage } from "./DatasetIssuesPage";
 import { grey } from "@mui/material/colors";
+import { DatasetTags } from "components/DatasetTags";
 
 export const DatasetPage = () => {
   const { id } = useParams("id");
@@ -66,6 +67,9 @@ export const DatasetPage = () => {
                 {`${filesize} | ${dataset?.file_type} | ${created}`}
               </Typography>
             )}
+            <Grid item xs={12} marginTop={1}>
+              <DatasetTags datasetId={id} />
+            </Grid>
           </Grid>
         </Card>
       </Grid>

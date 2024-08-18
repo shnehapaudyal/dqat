@@ -23,7 +23,6 @@ logging.basicConfig(
 
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-
 download_nltk()
 
 
@@ -84,6 +83,14 @@ def get_single_dataset_record(dataset_id):
     return result, 200
 
 
+@app.route('/dataset/<string:dataset_id>/tags', methods=['GET'])
+def get_dataset_tags(dataset_id):
+    df = dataframe(dataset_id)
+    tags = datasets.get_tags(df)
+
+    return tags, 200
+
+
 @app.route('/dataset/<string:dataset_id>/metrics', methods=['GET'])
 def get_dataset_metrics(dataset_id):
     df = dataframe(dataset_id)
@@ -91,6 +98,25 @@ def get_dataset_metrics(dataset_id):
 
     if not domain:
         return {"error": "Dataset not found"}, 404
+
+    return dataset_metrics, 200
+
+
+@app.route('/dataset/<string:dataset_id>/estimate/metrics', methods=['GET'])
+def get_dataset_metrics_estimation(dataset_id):
+    df = dataframe(dataset_id)
+    dataset_metrics = metrics.get_metrics_estimate(df)
+
+    if not domain:
+        return {"error": "Dataset not found"}, 404
+
+    return dataset_metrics, 200
+
+
+@app.route('/dataset/<string:dataset_id>/metrics/readability', methods=['GET'])
+def get_dataset_readability(dataset_id):
+    df = dataframe(dataset_id)
+    dataset_metrics = metrics.get_readability(df)
 
     return dataset_metrics, 200
 
@@ -122,7 +148,6 @@ def get_dataset_issues(dataset_id):
 @app.route('/dataset/<string:dataset_id>/stats', methods=['GET'])
 def get_statistics(dataset_id):
     df = dataframe(dataset_id)
-    types = domain.types.get_type_info(df)
     statistics = (datasets.statistics(df))  # Assuming definemetrics has a get_statistics function
 
     if not statistics:
@@ -216,4 +241,4 @@ def get_duplicate(dataset_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=False)

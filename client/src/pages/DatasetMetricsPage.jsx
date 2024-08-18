@@ -1,6 +1,7 @@
 import { Card, Grid, Skeleton, Typography } from "@mui/material";
 import { useDatasetRating } from "api/query";
 import { DatasetGauge, DatasetMetricsList } from "components";
+import { DatasetReadability } from "components/DatasetReadability";
 
 export const DatasetMetricsPage = ({ datasetId }) => {
   const { data, isLoading } = useDatasetRating(datasetId);
@@ -41,8 +42,11 @@ export const DatasetMetricsPage = ({ datasetId }) => {
           </Grid>
         </Card>
       </Grid>
-      <Grid container item>
+      <Grid item xs={12}>
         <DatasetMetricsList datasetId={datasetId} />
+      </Grid>
+      <Grid item xs={12}>
+        <DatasetReadability datasetId={datasetId} />
       </Grid>
     </Grid>
   );

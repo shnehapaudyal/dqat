@@ -67,6 +67,21 @@ export const getDatasetData = async (datasetId) => {
   return response.data;
 };
 
+export const getDatasetTags = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/tags`);
+  return response.data;
+};
+
+export const getDatasetMetricsEstimation = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/estimate/metrics`);
+  return response.data;
+};
+
+export const getDatasetReadability = async (datasetId) => {
+  const response = await api.get(`/dataset/${datasetId}/metrics/readability`);
+  return response.data;
+};
+
 export const getDatasetType = async (datasetId) => {
   const response = await api.get(`/dataset/${datasetId}/types`);
   return response.data;

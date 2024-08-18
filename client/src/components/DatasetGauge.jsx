@@ -1,4 +1,4 @@
-import { blue, green, orange } from "@mui/material/colors";
+import { blue, common, green, orange } from "@mui/material/colors";
 import { Gauge, gaugeClasses } from "@mui/x-charts";
 import React from "react";
 

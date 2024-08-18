@@ -24,6 +24,12 @@ export const useUploadDataset = () => {
 export const useDatasets = () =>
   useApi(["datasets"], () => api.getAllDatasetRecords());
 
+export const useDatasetTags = (datasetId) => useApi(["dataset", datasetId, "tags"], () => api.getDatasetTags(datasetId))
+
+export const useDatasetMetricEstimation = (datasetId) => useApi(["dataset", datasetId, "metric", "estimation"], () => api.getDatasetMetricsEstimation(datasetId))
+
+export const useDatasetReadability = (datasetId) => useApi(["dataset", datasetId, "metric", "readability"], () => api.getDatasetReadability(datasetId))
+
 export const useDataset = (datasetId) =>
   useApi(["dataset", datasetId, "detail"], () =>
     api.getSingleDatasetRecord(datasetId),
