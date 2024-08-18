@@ -1,7 +1,8 @@
 import gensim
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.multioutput import MultiOutputClassifier
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MultiLabelBinarizer
 
@@ -14,8 +15,9 @@ class DqatClassifier:
         self.report = None
         self.model = None
         self.word2vec_model = None
+        self.corpus = None
 
-    def fit(self, X, y):
+    def fit(self, X, Y):
         fit_x = [" ".join(x) for x in X]
 
         # self.word2vec_model = gensim.models.Word2Vec(sentences=fit_x, vector_size=200, window=3,
@@ -23,13 +25,24 @@ class DqatClassifier:
         #                                              workers=40)
 
         X = fit_x
-        y = self.mlb.fit_transform(y)
+        y = self.mlb.fit_transform(Y)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=42)
 
         self.model = Pipeline([
-            ('vectorizer', TfidfVectorizer()),
-            ('classifier', MultiOutputClassifier(self.classifier()))
+            ('vectorizer', CountVectorizer()),
+            ('classifier', self.classifier())
         ])
-        self.model.fit(X, y)
+        self.model.fit(X_train, y_train)
+        corpus = []
+        for x in X_train:
+            corpus.extend(x.split())
+        self.corpus = set(corpus)
+
+        y_pred = self.model.predict(X_test)
+        self.report = \
+            classification_report(y_test, y_pred, target_names=self.mlb.classes_, output_dict=True, zero_division=0)[
+                'samples avg']
 
     def headers_to_vec(self, headers):
         # Get the vector for each word and take the mean of the vectors
@@ -43,8 +56,15 @@ class DqatClassifier:
             return np.zeros(vector_size)
 
     def predict(self, input):
-        input = [" ".join(input)]
+        # remove from input if not present in corpus
+        # input = self.preprocess_headers(input)
+        input = " ".join(input)
 
+        input = [word for word in input.split() if word in self.corpus]
+        if len(input) == 0:
+            return []
+
+        input = [" ".join(input)]
         result_binary = self.model.predict(input)
         result = self.mlb.inverse_transform(result_binary)
         return result[0] if result else []

@@ -20,9 +20,9 @@ export const DatasetMetricsList = ({ datasetId }) => {
   // console.log(metrics, datasetId);
 
   const rows =
-    metrics?.map(({ name, score }) => ({
+    metrics?.map(({ name, label, score }) => ({
       id: name,
-      name: snakeCaseToTitleCase(name),
+      name: label ?? snakeCaseToTitleCase(name),
       score,
     })) ?? [];
 

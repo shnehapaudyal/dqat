@@ -23,7 +23,7 @@ def dataset_metrics(df):
         {'name': 'uniqueness', 'score': uniqueness.calculate_uniqueness(df)},
         {'name': 'consistency', 'score': consistency.calculate_consistency(df, type_info)},
         {'name': 'conformity', 'score': conformity.calculate_conformity(df, types.supported_patterns, type_info)},
-        {'name': 'readability', 'score': readability.calculate_readability(df, type_info)},
+        {'name': 'readability', 'label': 'Spelling Accuracy', 'score': readability.calculate_readability(df, type_info)},
         {'name': 'ease_of_manipulation', 'score': ease_of_manipulation.calculate_ease_of_manipulation(df)},
         {'name': 'lexical_diversity', 'score': diversity.calculate_diversity(df, type_info)},
     ]
