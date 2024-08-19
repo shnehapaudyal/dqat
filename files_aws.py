@@ -23,7 +23,6 @@ def save(file, filename):
     return size, filename
 
 
-@lru_cache
 def read(filename):
     bucket_file = f"s3://{bucket_name}/{filename}"
     print(bucket_file)
