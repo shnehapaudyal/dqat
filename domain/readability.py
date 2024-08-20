@@ -1,14 +1,30 @@
 from spellchecker import SpellChecker
 import contractions
+import re
 
 from domain.consistency import is_numeric
 
 spell = SpellChecker()
 
 
+def preprocess_text(text):
+    # Expand contractions
+    text = contractions.fix(text)
+
+    # Convert to lowercase
+    text = text.lower()
+
+    # Remove special characters and numbers
+    text = re.sub(r'[^a-z\s]', '', text)
+
+    return text
+
+
 def is_correctly_spelled(value):
     if isinstance(value, str):
-        return len(spell.unknown(spell.split_words(contractions.fix(value)))) == 0
+        processed_text = preprocess_text(value)
+        misspelled = spell.unknown(spell.split_words(processed_text))
+        return len(misspelled) == 0
     return True
 
 
