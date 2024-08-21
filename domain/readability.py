@@ -38,14 +38,14 @@ def calculate_readability(df, type_info):
         correctly_spelled = df[column].map(lambda x: is_correctly_spelled(x)).sum()
         return correctly_spelled
 
-    typo_sum = 0
+    correctly_spelled_sum = 0
     for column in df.columns:
         if column in string_columns:
-            typo_sum += typo(column)
+            correctly_spelled_sum += typo(column)
 
     total_values = df.size
 
-    readability = (1 - typo_sum / total_values) * 100
+    readability = (correctly_spelled_sum / total_values) * 100
     return readability
 
 
