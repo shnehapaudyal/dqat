@@ -42,6 +42,8 @@ def calculate_readability(df, type_info):
     for column in df.columns:
         if column in string_columns:
             correctly_spelled_sum += typo(column)
+        else:
+            correctly_spelled_sum += df[column].size
 
     total_values = df.size
 
