@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <PageWrapper title="DQAAT">
+      <PageWrapper title="DQAT">
         <MainPage />
       </PageWrapper>
     ),
