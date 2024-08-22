@@ -1,3 +1,4 @@
+import pandas as pd
 from spellchecker import SpellChecker
 import contractions
 import re
@@ -32,7 +33,13 @@ def calculate_readability(df, type_info):
     # Helper function to check if a value is correctly spelled
     data_types, column_types, consistency_values = type_info
 
-    string_columns = column_types[(column_types['type'] == 'string')]['column'].values
+    string_columns = pd.concat(
+        (column_types[column_types['type'] == 'string']['column'],
+        column_types[column_types['type'] == 'enum']['column'])
+    ).values
+
+    if len(string_columns) == 0:
+        return None
 
     def typo(column):
         correctly_spelled = df[column].map(lambda x: is_correctly_spelled(x)).sum()
@@ -56,7 +63,10 @@ def typos(df, type_info):
     typo_percentages = {}
 
     data_types, column_types, consistency_values = type_info
-    string_columns = column_types[column_types['type'] == 'string']['column']
+    string_columns = pd.concat(
+        (column_types[column_types['type'] == 'string']['column'],
+         column_types[column_types['type'] == 'enum']['column'])
+    ).values
 
     def typo(column):
         correctly_spelled = df[column].map(lambda x: is_correctly_spelled(x)).sum()
@@ -64,6 +74,6 @@ def typos(df, type_info):
         return ((total_count - correctly_spelled) / total_count) * 100
 
     for column in df.columns:
-        typo_percentages[column] = typo(column) if column in string_columns.values else 0
+        typo_percentages[column] = typo(column) if column in string_columns else 0
 
     return typo_percentages

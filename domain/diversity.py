@@ -8,7 +8,7 @@ def calculate_diversity(df, type_info):
     columns = column_types[column_types['type'] == 'string']['column'].values
 
     if len(columns) == 0:
-        return 100
+        return None
 
     def calculate_ttr(value):
         unique_words = set(value.split())

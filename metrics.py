@@ -18,15 +18,23 @@ def get_dataset_metrics(df):
 def dataset_metrics(df):
     type_info = types.get_type_info(df)
 
-    return [
+    metrics = [
         {'name': 'completeness', 'score': completeness.calculate_completeness(df)},
         {'name': 'uniqueness', 'score': uniqueness.calculate_uniqueness(df)},
         {'name': 'consistency', 'score': consistency.calculate_consistency(df, type_info)},
         {'name': 'conformity', 'score': conformity.calculate_conformity(df, types.supported_patterns, type_info)},
-        {'name': 'readability', 'label': 'Spelling Accuracy', 'score': readability.calculate_readability(df, type_info)},
         {'name': 'ease_of_manipulation', 'score': ease_of_manipulation.calculate_ease_of_manipulation(df)},
-        {'name': 'lexical_diversity', 'score': diversity.calculate_diversity(df, type_info)},
     ]
+
+    spelling_accuracy = readability.calculate_readability(df, type_info)
+    if spelling_accuracy is not None:
+        metrics.append({'name': 'readability', 'label': 'Spelling Accuracy', 'score': spelling_accuracy})
+
+    lexical_diversity = diversity.calculate_diversity(df, type_info)
+    if lexical_diversity is not None:
+        metrics.append({'name': 'lexical_diversity', 'score': lexical_diversity})
+
+    return metrics
 
 
 def get_dataset_dataframe(dataset_id):
@@ -105,4 +113,3 @@ def get_readability(df):
         return rfl.to_dict(orient='records')[0]
     else:
         return {}
-
