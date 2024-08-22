@@ -11,8 +11,16 @@ def create_dataset(dataset):
     session.commit()
 
 
+datasets = {}
+
+
 def read_dataset(dataset_id):
-    return session.query(DatasetRecord).filter_by(dataset_id=dataset_id).first()
+    if dataset_id in datasets:
+        return datasets[dataset_id]
+
+    first = session.query(DatasetRecord).filter_by(dataset_id=dataset_id).first()
+    datasets[dataset_id] = first
+    return first
 
 
 def update_dataset(dataset):

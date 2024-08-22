@@ -4,7 +4,6 @@ import files_local
 from server import app
 from functools import lru_cache
 
-
 bucket_name = app.config['UPLOAD_BUCKET']
 
 
@@ -23,7 +22,15 @@ def save(file, filename):
     return size, filename
 
 
+files_cache = {}
+
+
 def read(filename):
+    if filename in files_cache:
+        return files_cache[filename]
+
     bucket_file = f"s3://{bucket_name}/{filename}"
     print(bucket_file)
-    return pd.read_csv(bucket_file)
+    df = pd.read_csv(bucket_file)
+    files_cache[filename] = df
+    return df

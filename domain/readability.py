@@ -35,24 +35,15 @@ def calculate_readability(df, type_info):
 
     string_columns = pd.concat(
         (column_types[column_types['type'] == 'string']['column'],
-        column_types[column_types['type'] == 'enum']['column'])
+         column_types[column_types['type'] == 'enum']['column'])
     ).values
 
     if len(string_columns) == 0:
         return None
 
-    def typo(column):
-        correctly_spelled = df[column].map(lambda x: is_correctly_spelled(x)).sum()
-        return correctly_spelled
+    correctly_spelled_sum = df[string_columns].map(lambda x: is_correctly_spelled(x)).sum().sum()
 
-    correctly_spelled_sum = 0
-    for column in df.columns:
-        if column in string_columns:
-            correctly_spelled_sum += typo(column)
-        else:
-            correctly_spelled_sum += df[column].size
-
-    total_values = df.size
+    total_values = df[string_columns].size
 
     readability = (correctly_spelled_sum / total_values) * 100
     return readability

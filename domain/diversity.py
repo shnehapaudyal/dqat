@@ -1,30 +1,22 @@
 import pandas as pd
 from domain import types
+from domain.readability import preprocess_text
 
 
 def calculate_diversity(df, type_info):
     data_types, column_types, _ = type_info
 
-    columns = column_types[column_types['type'] == 'string']['column'].values
-
-    if len(columns) == 0:
-        return None
-
-    def calculate_ttr(value):
-        unique_words = set(value.split())
-        ttr = len(unique_words) / (len(value))
-        return ttr
-
     string_columns = column_types[(column_types['type'] == 'string')]['column'].values
 
-    # diversity = 0
-    column_diversity = 0
-    for column in df.columns:
-        if column in string_columns:
-            explode = df[column].map(lambda x: str(x).split()).explode(column)
-            column_diversity += len(set(explode)) / len(explode)
-        else:
-            column_diversity += 1
+    if len(string_columns) == 0:
+        return None
 
-    diversity = column_diversity / len(df.columns)
+    def pre_process(value):
+        return preprocess_text(str(value))
+
+    column_diversity = 0
+    explode = df[string_columns].map(pre_process).map(lambda x: x.split()).apply(pd.Series.explode)
+    column_diversity += explode.drop_duplicates().size / explode.size
+
+    diversity = column_diversity / len(string_columns)
     return diversity * 100
