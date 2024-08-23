@@ -68,6 +68,7 @@ def get_all_dataset_records():
         'size': len(record_list),
     }, 200
 
+metrics_cache = {}
 
 @app.route('/dataset/<string:dataset_id>', methods=['GET'])
 def get_single_dataset_record(dataset_id):
@@ -78,7 +79,10 @@ def get_single_dataset_record(dataset_id):
 
     result = record.json()
     df = files.read(record.path)
-    result['overall_score'] = metrics.calculate_overall_score(df)
+    score, all_metrics = metrics.calculate_overall_score(df)
+    result['overall_score'] = score
+
+    metrics_cache[dataset_id] = all_metrics
 
     return result, 200
 
@@ -93,7 +97,11 @@ def get_dataset_tags(dataset_id):
 
 @app.route('/dataset/<string:dataset_id>/metrics', methods=['GET'])
 def get_dataset_metrics(dataset_id):
+    if dataset_id in metrics_cache:
+        return metrics_cache[dataset_id]
+
     df = dataframe(dataset_id)
+
     dataset_metrics = metrics.get_dataset_metrics(df)
 
     if not domain:
@@ -241,4 +249,4 @@ def get_duplicate(dataset_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=False)
+    app.run(debug=True)

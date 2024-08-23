@@ -25,7 +25,7 @@ export const History = () => {
   // navigate({ to: `/detail/233` });
 
   const openDetailPage = (datasetId) => {
-    navigate(`dataset/${datasetId}?tab=data`);
+    navigate(`dataset/${datasetId}?tab=quality`);
   };
 
   return (

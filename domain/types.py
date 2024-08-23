@@ -58,8 +58,6 @@ everything_patterns = [
     r'*'
 ]
 
-
-
 supported_patterns = []
 supported_patterns.extend(integer_patterns)
 supported_patterns.extend(float_patterns)
@@ -70,7 +68,17 @@ supported_patterns.extend(time_patterns)
 supported_patterns.extend(datetime_patterns)
 supported_patterns.extend(email_patterns)
 supported_patterns.extend(credid_card_patterns)
+
+
 # supported_patterns.extend(everything_patterns)
+
+def get_timestamp_value(value):
+    for patterns in [date_patterns, time_patterns, datetime_patterns]:
+        for pattern in patterns:
+            if re.match(pattern, value):
+                # parse datetime pattern
+                return pd.to_datetime(value, format='mixed')
+    return None
 
 
 # Function to classify the type of each value

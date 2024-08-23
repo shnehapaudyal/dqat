@@ -2,6 +2,7 @@ import { createBrowserRouter, Link, useLocation } from "react-router-dom";
 import { DatasetPage, MainPage } from "pages";
 import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
 import { ArrowBack, Home } from "@mui/icons-material";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const MyToolbar = ({ title}) => {
   const location = useLocation();
@@ -41,7 +42,7 @@ const MyToolbar = ({ title}) => {
 const PageWrapper = ({ title, children }) => (
   <Box sx={{ height: "100vh" }}>
     <MyToolbar title={title}/>
-  <Box>{children}</Box>
+    <Box>{children}</Box>
   </Box>
 );
 

@@ -73,37 +73,41 @@ export const DatasetPage = () => {
           </Grid>
         </Card>
       </Grid>
-      <Grid xs={12} item marginTop={2}>
-        <Tabs
-          value={selectedTab}
-          onChange={(_, newTab) => {
-            setSearchParams(`tab=${newTab}`);
-            const tabs = tabsRef.current;
-            const offset = tabsRef.current?.offsetTop;
-            if (tabs) {
-              tabsRef.current?.animate({
-                scrollToTop: offset,
-              });
-            }
-          }}
-          ref={tabsRef}
-        >
-          <Tab label="Data" value="data" />
-          <Tab label="Quality" value="quality" />
-          <Tab label="Issues" value="issues" />
-        </Tabs>
-      </Grid>
-      <Grid item xs={12}>
-        <CustomTabPanel index="data" value={selectedTab}>
-          <DatasetDataPage datasetId={id} />
-        </CustomTabPanel>
-        <CustomTabPanel index="quality" value={selectedTab}>
-          <DatasetMetricsPage datasetId={id} />
-        </CustomTabPanel>
-        <CustomTabPanel index="issues" value={selectedTab}>
-          <DatasetIssuesPage datasetId={id} />
-        </CustomTabPanel>
-      </Grid>
+      {!isLoading ? (
+        <Grid xs={12} item marginTop={2}>
+          <Tabs
+            value={selectedTab}
+            onChange={(_, newTab) => {
+              setSearchParams(`tab=${newTab}`);
+              const tabs = tabsRef.current;
+              const offset = tabsRef.current?.offsetTop;
+              if (tabs) {
+                tabsRef.current?.animate({
+                  scrollToTop: offset,
+                });
+              }
+            }}
+            ref={tabsRef}
+          >
+            <Tab label="Data" value="data" />
+            <Tab label="Quality" value="quality" />
+            <Tab label="Issues" value="issues" />
+          </Tabs>
+        </Grid>
+      ) : null}
+      {!isLoading ? (
+        <Grid item xs={12}>
+          <CustomTabPanel index="data" value={selectedTab}>
+            <DatasetDataPage datasetId={id} />
+          </CustomTabPanel>
+          <CustomTabPanel index="quality" value={selectedTab}>
+            <DatasetMetricsPage datasetId={id} />
+          </CustomTabPanel>
+          <CustomTabPanel index="issues" value={selectedTab}>
+            <DatasetIssuesPage datasetId={id} />
+          </CustomTabPanel>
+        </Grid>
+      ) : null}
     </Grid>
   );
 };

@@ -14,9 +14,10 @@ def calculate_diversity(df, type_info):
     def pre_process(value):
         return preprocess_text(str(value))
 
-    column_diversity = 0
-    explode = df[string_columns].map(pre_process).map(lambda x: x.split()).apply(pd.Series.explode)
-    column_diversity += explode.drop_duplicates().size / explode.size
+    tokens = df[string_columns].map(pre_process).map(lambda x: x.split())
+    explode = pd.Series(tokens.apply(lambda x: x.sum()).sum())
+
+    column_diversity = explode.drop_duplicates().size / explode.size
 
     diversity = column_diversity / len(string_columns)
     return diversity * 100

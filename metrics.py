@@ -23,7 +23,7 @@ def dataset_metrics(df):
         {'name': 'uniqueness', 'score': uniqueness.calculate_uniqueness(df)},
         {'name': 'consistency', 'score': consistency.calculate_consistency(df, type_info)},
         {'name': 'conformity', 'score': conformity.calculate_conformity(df, types.supported_patterns, type_info)},
-        {'name': 'ease_of_manipulation', 'score': ease_of_manipulation.calculate_ease_of_manipulation(df)},
+        {'name': 'ease_of_manipulation', 'score': ease_of_manipulation.calculate_ease_of_manipulation(df, type_info)},
     ]
 
     spelling_accuracy = readability.calculate_readability(df, type_info)
@@ -48,7 +48,7 @@ def calculate_overall_score(df):
 
     total_score = sum(metric['score'] for metric in metrics)
 
-    return total_score / len(metrics)
+    return total_score / len(metrics), metrics
 
 
 def get_missingvalue(df):

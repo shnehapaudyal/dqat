@@ -1,4 +1,5 @@
 # Create the table in the database
+import threading
 from functools import lru_cache
 from dbengine import Base, engine, session
 from entity.dataset import DatasetRecord
@@ -13,14 +14,18 @@ def create_dataset(dataset):
 
 datasets = {}
 
+# Create a lock object
+read_lock = threading.Lock()
+
 
 def read_dataset(dataset_id):
-    if dataset_id in datasets:
-        return datasets[dataset_id]
+    with read_lock:
+        if dataset_id in datasets:
+            return datasets[dataset_id]
 
-    first = session.query(DatasetRecord).filter_by(dataset_id=dataset_id).first()
-    datasets[dataset_id] = first
-    return first
+        first = session.query(DatasetRecord).filter_by(dataset_id=dataset_id).first()
+        datasets[dataset_id] = first
+        return first
 
 
 def update_dataset(dataset):

@@ -1,3 +1,5 @@
+import threading
+
 import boto3
 import pandas as pd
 import files_local
@@ -23,14 +25,16 @@ def save(file, filename):
 
 
 files_cache = {}
+read_lock = threading.Lock()
 
 
 def read(filename):
-    if filename in files_cache:
-        return files_cache[filename]
-
-    bucket_file = f"s3://{bucket_name}/{filename}"
-    print(bucket_file)
-    df = pd.read_csv(bucket_file)
-    files_cache[filename] = df
-    return df
+    # Create a lock object
+    with read_lock:
+        if filename in files_cache:
+            return files_cache[filename]
+        bucket_file = f"s3://{bucket_name}/{filename}"
+        print(bucket_file)
+        df = pd.read_csv(bucket_file)
+        files_cache[filename] = df
+        return df
