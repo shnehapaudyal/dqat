@@ -85,14 +85,14 @@ def detect_numeric_outliers(df, column):
     return outliers
 
 
-
 def detect_datetime_outliers(df, column):
     supported_formats = []
     supported_formats.extend(domain.types.date_patterns)
     supported_formats.extend(domain.types.time_patterns)
     supported_formats.extend(domain.types.datetime_patterns)
 
-    df[f'{column}_timestamp'] = pd.to_datetime(df[column], errors='coerce').map(lambda x: x.timestamp())
+    df[f'{column}_timestamp'] = pd.to_datetime(df[column], errors='coerce').map(
+        lambda x: 0 if pd.isnull(x) else x.timestamp())
 
     def map_datetime(value):
         if not value:
@@ -116,7 +116,7 @@ def detect_datetime_outliers(df, column):
 
 
 def detect_string_outliers(df, column):
-    df[f'{column}_len'] = df[column].apply(lambda x: len(str(x)))
+    df[f'{column}_len'] = df[column].apply(lambda x: 0 if pd.isnull(x) else len(str(x)))
     outliers = detect_outliers(df, f'{column}_len')
     df.drop(columns=[f'{column}_len'], inplace=True)  # Drop the temporary length column
     return outliers
@@ -124,7 +124,7 @@ def detect_string_outliers(df, column):
 
 def detect_enum_outliers(df, column):
     freq = df[column].value_counts()
-    df[f'{column}_frequency'] = df[column].apply(lambda x: freq[x])
+    df[f'{column}_frequency'] = df[column].apply(lambda x: 0 if pd.isnull(x) else freq[x])
 
     outlier = detect_outliers(df, f'{column}_frequency')
     df.drop(columns=[f'{column}_frequency'], inplace=True)  # Drop the temporary length column
