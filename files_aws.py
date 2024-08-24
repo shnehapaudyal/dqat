@@ -32,9 +32,9 @@ def read(filename):
     # Create a lock object
     with read_lock:
         if filename in files_cache:
-            return files_cache[filename]
+            return files_cache[filename].copy()
         bucket_file = f"s3://{bucket_name}/{filename}"
         print(bucket_file)
         df = pd.read_csv(bucket_file)
-        files_cache[filename] = df
+        files_cache[filename] = df.copy()
         return df
