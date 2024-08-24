@@ -60,43 +60,40 @@ def clean_df(df, type_info):
         df = df[(z_scores < 3).all(axis=1)]
 
     # Step 2: Handling Outliers in String Columns based on Length
-    if len(string_columns) > 0:
-        for col in string_columns:
-            # Calculate the string lengths
-            df[f'{col}_length'] = df[col].str.len()
+    for col in string_columns:
+        # Calculate the string lengths
+        df[f'{col}_length'] = df[col].str.len()
 
-            # Calculate z-scores for string lengths
-            z_scores = np.abs(StandardScaler().fit_transform(df[[f'{col}_length']]))
-            df = df[(z_scores < 3).all(axis=1)]
+        # Calculate z-scores for string lengths
+        z_scores = np.abs(StandardScaler().fit_transform(df[[f'{col}_length']]))
+        df = df[(z_scores < 3).all(axis=1)]
 
-            # Drop the temporary length column
-            df.drop(columns=[f'{col}_length'], inplace=True)
+        # Drop the temporary length column
+        df.drop(columns=[f'{col}_length'], inplace=True)
 
     # Step 3: Handling Outliers in Enum Columns based on Frequency
-    if len(enum_columns) > 0:
-        for col in enum_columns:
-            # Calculate the frequency of each category
-            freq = df[col].value_counts(normalize=True)
+    for col in enum_columns:
+        # Calculate the frequency of each category
+        freq = df[col].value_counts()
+        df[f'{col}_frequency'] = df[col].apply(lambda x: freq[x])
 
-            # Identify infrequent categories as outliers (e.g., less than 1% of data)
-            infrequent_categories = freq[freq < 0.01].index
+        z_scores = StandardScaler().fit_transform(df[[f'{col}_frequency']])
+        df = df[(z_scores < 3).all(axis=1)]
 
-            # Remove rows with infrequent categories
-            df = df[~df[col].isin(infrequent_categories)]
-
+        # Drop the temporary length column
+        df.drop(columns=[f'{col}_frequency'], inplace=True)
 
     # Step 4: Handling Outliers in DateTime Columns using Timestamps
-    if len(datetime_columns) > 0:
-        for col in datetime_columns:
-            # Convert datetime to timestamps
-            df[f'{col}_timestamp'] = df[col].map(lambda x: pd.to_datetime(x) if pd.notnull(x) else np.nan)
+    for col in datetime_columns:
+        # Convert datetime to timestamps
+        df[f'{col}_timestamp'] = df[col].map(lambda x: pd.to_datetime(x) if pd.notnull(x) else np.nan)
 
-            # Calculate z-scores for the timestamp
-            z_scores = np.abs(StandardScaler().fit_transform(df[[f'{col}_timestamp']]))
-            df = df[(z_scores < 3).all(axis=1)]
+        # Calculate z-scores for the timestamp
+        z_scores = np.abs(StandardScaler().fit_transform(df[[f'{col}_timestamp']]))
+        df = df[(z_scores < 3).all(axis=1)]
 
-            # Drop the temporary timestamp column
-            df.drop(columns=[f'{col}_timestamp'], inplace=True)
+        # Drop the temporary timestamp column
+        df.drop(columns=[f'{col}_timestamp'], inplace=True)
 
     # # Step 5: Handling Outliers (Optional)
     # # For example, removing outliers that are more than 3 standard deviations away

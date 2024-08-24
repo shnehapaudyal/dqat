@@ -70,8 +70,6 @@ supported_patterns.extend(email_patterns)
 supported_patterns.extend(credid_card_patterns)
 
 
-# supported_patterns.extend(everything_patterns)
-
 def get_timestamp_value(value):
     for patterns in [date_patterns, time_patterns, datetime_patterns]:
         for pattern in patterns:
@@ -156,7 +154,11 @@ def aggregate_column_types(classified_df):
         # Get the value counts for the column
         value_counts = classified_df[column].value_counts()
         # Get the most frequent value
-        most_frequent_value = value_counts.index[0]
+        index = 0
+        most_frequent_value = value_counts.index[index]
+        while most_frequent_value == 'unknown' and index < len(value_counts) - 1:
+            index += 1
+            most_frequent_value = value_counts.index[index]
         # Append the column name, most frequent value, and its type to the list
 
         column_info.append({'column': column, 'type': most_frequent_value})

@@ -4,6 +4,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 from pandas import Series
+from sklearn.preprocessing import StandardScaler
 
 import domain.types
 from domain.consistency import is_numeric
@@ -53,27 +54,36 @@ def convert_column_types(df):
     return df
 
 
-def detect_outliers(column):
-    def detect_outliers_std(column: Series):
-        mean = column.mean()
-        std = column.std()
-        threshold = 3  # Typically 3 standard deviations
-        try:
-            return (column > mean + threshold * std) | (column < mean - threshold * std)
-        except Exception as e:
-            print(f"Error occurred while detecting outliers: {e}")
-            return column.apply(lambda x: False)
+def detect_outliers(df, column):
+    z_scores = StandardScaler().fit_transform(df[[column]])
+    return (z_scores >= 3).sum() / df[column].size * 100
 
-    outliers_std = detect_outliers_std(column).sum()
-    outlier_percentage = outliers_std / len(column) * 100
-    return outlier_percentage
+    # def detect_outliers_std(column: Series):
+    #     mean = column.mean()
+    #     std = column.std()
+    #     threshold = 3  # Typically 3 standard deviations
+    #     try:
+    #         return (column > mean + threshold * std) | (column < mean - threshold * std)
+    #     except Exception as e:
+    #         print(f"Error occurred while detecting outliers: {e}")
+    #         return column.apply(lambda x: False)
+    #
+    # outliers_std = detect_outliers_std(column).sum()
+    # outlier_percentage = outliers_std / len(column) * 100
+    # return outlier_percentage
 
 
 def detect_numeric_outliers(df, column):
     def clean_value(value):
         return value if isinstance(value, (int, float)) else value.replace(',', '') if value is not None else ''
 
-    return detect_outliers(pd.to_numeric(df[column].map(clean_value), errors='coerce'))
+    df[f'{column}_numeric'] = pd.to_numeric(df[column].map(clean_value), errors='coerce')
+    outliers = detect_outliers(df, f'{column}_numeric')
+
+    df.drop(columns=[f'{column}_numeric'], inplace=True)  # Drop the temporary numeric column
+
+    return outliers
+
 
 
 def detect_datetime_outliers(df, column):
@@ -95,23 +105,29 @@ def detect_datetime_outliers(df, column):
                 continue
         return 0
 
-    return detect_outliers(df[column].map(map_datetime))
+    df[f'{column}_timestamp'] = df[column].map(map_datetime)
+    outliers = detect_outliers(df, f'{column}_timestamp')
+
+    df.drop(columns=[f'{column}_timestamp'], inplace=True)  # Drop the temporary timestamp column
+
+    return outliers
 
 
 def detect_string_outliers(df, column):
-    return detect_outliers(df[column].fillna('').map(len))
+    df[f'{column}_len'] = df[column].str.len
+    outliers = detect_outliers(df[f'{column}_len'])
+    df.drop(columns=[f'{column}_len'], inplace=True)  # Drop the temporary length column
+    return outliers
 
 
 def detect_enum_outliers(df, column):
-    count = df[column].value_counts()
+    freq = df[column].value_counts()
+    df[f'{column}_frequency'] = df[column].apply(lambda x: freq[x])
 
-    def count_fn(x):
-        try:
-            return count[x] if x is not None else 0
-        except KeyError as e:
-            return 0  # Return 0 for non-existent enum values or null values
+    outlier = detect_outliers(df, f'{column}_frequency')
+    df.drop(columns=[f'{column}_frequency'], inplace=True)  # Drop the temporary length column
 
-    return detect_outliers(df[column].map(count_fn))
+    return outlier
 
 
 def outliers(df, type_info):
