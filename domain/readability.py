@@ -1,12 +1,14 @@
+import nltk.corpus
 import pandas as pd
 from spellchecker import SpellChecker
 import contractions
 import re
+from nltk.corpus import wordnet
 
 from domain.consistency import is_numeric
 
 spell = SpellChecker()
-
+spell.word_frequency.load_words(wordnet.words())
 
 def preprocess_text(text):
     # Expand contractions
@@ -22,11 +24,9 @@ def preprocess_text(text):
 
 
 def is_correctly_spelled(value):
-    if isinstance(value, str):
-        processed_text = preprocess_text(value)
-        misspelled = spell.unknown(spell.split_words(processed_text))
-        return len(misspelled) == 0
-    return True
+    processed_text = preprocess_text(str(value))
+    misspelled = spell.unknown(spell.split_words(processed_text))
+    return len(misspelled) == 0
 
 
 def calculate_readability(df, type_info):

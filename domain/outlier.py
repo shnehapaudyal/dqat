@@ -92,6 +92,8 @@ def detect_datetime_outliers(df, column):
     supported_formats.extend(domain.types.time_patterns)
     supported_formats.extend(domain.types.datetime_patterns)
 
+    df[f'{column}_timestamp'] = pd.to_datetime(df[column], errors='coerce').map(lambda x: x.timestamp())
+
     def map_datetime(value):
         if not value:
             return 0
@@ -101,11 +103,11 @@ def detect_datetime_outliers(df, column):
                 if re.match(pattern, str(value)):
                     dt = datetime.strptime(value, pattern)
                     return dt.timestamp()
-            except ValueError:
+            except ValueError as e:
                 continue
         return 0
 
-    df[f'{column}_timestamp'] = df[column].map(map_datetime)
+    # df[f'{column}_timestamp'] = df[column].map(map_datetime)
     outliers = detect_outliers(df, f'{column}_timestamp')
 
     df.drop(columns=[f'{column}_timestamp'], inplace=True)  # Drop the temporary timestamp column
@@ -114,8 +116,8 @@ def detect_datetime_outliers(df, column):
 
 
 def detect_string_outliers(df, column):
-    df[f'{column}_len'] = df[column].str.len
-    outliers = detect_outliers(df[f'{column}_len'])
+    df[f'{column}_len'] = df[column].apply(lambda x: len(str(x)))
+    outliers = detect_outliers(df, f'{column}_len')
     df.drop(columns=[f'{column}_len'], inplace=True)  # Drop the temporary length column
     return outliers
 
