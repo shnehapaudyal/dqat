@@ -56,7 +56,8 @@ def convert_column_types(df):
 
 def detect_outliers(df, column):
     z_scores = StandardScaler().fit_transform(df[[column]])
-    return (z_scores >= 3).sum() / df[column].size * 100
+    z_scores = np.power(z_scores, 2)
+    return (z_scores > 9).sum() / df[column].size * 100
 
     # def detect_outliers_std(column: Series):
     #     mean = column.mean()
