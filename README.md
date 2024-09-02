@@ -18,6 +18,8 @@ This command does the following:
 - Installs all required Python packages listed in requirements.txt.
 - Creates a touchfile to indicate that the environment setup is complete.
 
+The default configuration for connecting to the database is set to use sqlite to allow anyone to start and locally run the project.
+
 ### 1. Build the Project
 To set up both the Python environment and the Node.js dependencies in one step, you can run:
 
