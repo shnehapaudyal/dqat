@@ -1,7 +1,5 @@
 # Makefile
 
-all: start
-
 venv: venv/touchfile
 
 venv/touchfile: requirements.txt
@@ -20,6 +18,4 @@ client:
 server:
 	. venv/bin/activate; python main.py
 
-start: build server client
-
-.PHONY: all client server start
+.PHONY: client server start
