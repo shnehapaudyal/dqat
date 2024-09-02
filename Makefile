@@ -3,7 +3,7 @@
 venv: venv/touchfile
 
 venv/touchfile: requirements.txt
-	virtualenv venv
+	python3 -m venv venv
 	. venv/bin/activate; pip install -Ur requirements.txt
 	touch venv/touchfile
 
